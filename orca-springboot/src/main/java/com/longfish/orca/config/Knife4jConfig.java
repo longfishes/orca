@@ -19,7 +19,7 @@ public class Knife4jConfig {
                 .name("longfish")
                 .email("longfishes@qq.com");
         Info info = new Info().title("")
-                .description("”中软杯A10“智能编辑器赛道 orca接口文档")
+                .description("”中软杯“ A10 智能编辑器赛道 orca接口文档")
                 .version(version)
                 .contact(contact);
         return new OpenAPI().info(info);
