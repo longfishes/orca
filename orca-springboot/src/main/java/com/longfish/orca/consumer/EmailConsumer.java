@@ -2,7 +2,7 @@ package com.longfish.orca.consumer;
 
 import com.alibaba.fastjson.JSON;
 import com.longfish.orca.pojo.dto.EmailDTO;
-import com.longfish.orca.util.CodeRedisUtil;
+import com.longfish.orca.util.CodeUtil;
 import com.longfish.orca.util.EmailUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -21,14 +21,14 @@ public class EmailConsumer {
     private EmailUtil emailUtil;
 
     @Autowired
-    private CodeRedisUtil codeRedisUtil;
+    private CodeUtil codeUtil;
 
     @RabbitHandler
     public void process(byte[] data) {
         EmailDTO emailDTO = JSON.parseObject(new String(data), EmailDTO.class);
         log.info("开始发送邮箱验证码TO：{}", emailDTO.getEmail());
         emailUtil.sendHtmlMail(emailDTO);
-        codeRedisUtil.insert(emailDTO.getEmail(), String.valueOf(emailDTO.getCommentMap().get("content")));
+        codeUtil.insert(emailDTO.getEmail(), String.valueOf(emailDTO.getCommentMap().get("content")));
     }
 
 }

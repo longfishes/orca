@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
 
-    @AccessLimit(seconds = 1, maxCount = 1)
+    @AccessLimit(seconds = 10, maxCount = 1)
     @GetMapping("/t")
     public Result<?> t() {
         return Result.success();
