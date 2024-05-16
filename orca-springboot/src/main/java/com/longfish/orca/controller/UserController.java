@@ -1,6 +1,9 @@
 package com.longfish.orca.controller;
 
 
+import com.longfish.orca.annotation.AccessLimit;
+import com.longfish.orca.pojo.Result;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -16,5 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    @AccessLimit(seconds = 1, maxCount = 1)
+    @GetMapping("/t")
+    public Result<?> t() {
+        return Result.success();
+    }
 
 }

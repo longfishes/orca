@@ -7,4 +7,8 @@ public interface CommonConstant {
     String CODE = "CODE";
 
     String USER_ID = "userId";
+
+    String UNKNOWN = "未知";
+
+    String APPLICATION_JSON = "application/json;charset=utf-8";
 }

@@ -1,5 +1,6 @@
 package com.longfish.orca.config;
 
+import com.longfish.orca.interceptor.AccessLimitInterceptor;
 import com.longfish.orca.interceptor.JwtTokenUserInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     @Autowired
     private JwtTokenUserInterceptor jwtTokenUserInterceptor;
 
+    @Autowired
+    private AccessLimitInterceptor accessLimitInterceptor;
+
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         log.info("addInterceptors...");
@@ -22,6 +26,8 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/**");
+
+        registry.addInterceptor(accessLimitInterceptor);
     }
 
     @Override
