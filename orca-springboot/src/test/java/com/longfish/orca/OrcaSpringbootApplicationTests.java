@@ -1,15 +1,23 @@
 package com.longfish.orca;
 
+import com.longfish.orca.enums.FilePathEnum;
 import com.longfish.orca.pojo.entity.User;
-import com.longfish.orca.properties.JwtProperties;
-import com.longfish.orca.properties.ProjectProperties;
-import com.longfish.orca.properties.RandomProperties;
+import com.longfish.orca.properties.*;
 import com.longfish.orca.service.IUserService;
+import com.longfish.orca.context.UploadStrategyContext;
 import com.longfish.orca.util.CodeUtil;
+import com.longfish.orca.util.IpUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,10 +34,44 @@ class OrcaSpringbootApplicationTests {
 	private RandomProperties randomProperties;
 
 	@Autowired
+	private OssConfigProperties ossConfigProperties;
+
+	@Autowired
+	private MinioProperties minioProperties;
+
+	@Autowired
+	private LocalProperties localProperties;
+
+	@Autowired
 	private CodeUtil codeUtil;
 
 	@Autowired
 	private IUserService userService;
+
+	@Autowired
+	private UploadStrategyContext uploadStrategyContext;
+
+	@Test
+	void testUpload() {
+		MultipartFile file = file2MultipartFile(new File("E:\\Administrator\\orca\\orca-springboot\\README.md"));
+		String url = uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.AVATAR.getPath());
+		System.out.println(url);
+	}
+
+	@Test
+	void testIp() {
+		System.out.println(IpUtil.getIpSource("192.168.1.67"));
+		System.out.println(IpUtil.getIpSource("154.64.253.77"));
+		System.out.println(IpUtil.getIpSource("1.1.1.1"));
+		System.out.println(IpUtil.getIpSource("182.9.32.22"));
+		System.out.println(IpUtil.getIpSource("183.9.0.194"));
+	}
+
+	@Test
+	void testOne() {
+		User user = userService.lambdaQuery(User.builder().username("1").build()).one();
+		System.out.println(user);
+	}
 
 	@Test
 	void testMP() {
@@ -53,6 +95,9 @@ class OrcaSpringbootApplicationTests {
 		System.out.println(projectProperties);
 		System.out.println(jwtProperties);
 		System.out.println(randomProperties);
+		System.out.println(ossConfigProperties);
+		System.out.println(minioProperties);
+		System.out.println(localProperties);
 	}
 
 	@Test
@@ -61,5 +106,21 @@ class OrcaSpringbootApplicationTests {
 			System.out.println(codeUtil.getRandomCode());
 		}
 	}
+
+	public MultipartFile file2MultipartFile(File file) {
+		Path path = Paths.get(file.getAbsolutePath());
+		String name = file.getName();
+		String originalFileName = file.getName();
+		String contentType = null;
+		byte[] content = new byte[0];
+		try {
+			contentType = Files.probeContentType(path);
+			content = Files.readAllBytes(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new MockMultipartFile(name, originalFileName, contentType, content);
+	}
+
 
 }

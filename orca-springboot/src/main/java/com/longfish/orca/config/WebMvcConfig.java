@@ -1,7 +1,7 @@
 package com.longfish.orca.config;
 
 import com.longfish.orca.interceptor.AccessLimitInterceptor;
-import com.longfish.orca.interceptor.JwtTokenUserInterceptor;
+import com.longfish.orca.interceptor.JwtTokenInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 
     @Autowired
-    private JwtTokenUserInterceptor jwtTokenUserInterceptor;
+    private JwtTokenInterceptor jwtTokenInterceptor;
 
     @Autowired
     private AccessLimitInterceptor accessLimitInterceptor;
@@ -23,9 +23,14 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     protected void addInterceptors(InterceptorRegistry registry) {
         log.info("addInterceptors...");
 
-        registry.addInterceptor(jwtTokenUserInterceptor)
+        registry.addInterceptor(jwtTokenInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/**");
+                .excludePathPatterns("/user/lambdaLogin")
+                .excludePathPatterns("/user/lambdaCodeLogin")
+                .excludePathPatterns("/user/uniqueCheck")
+                .excludePathPatterns("/user/code")
+                .excludePathPatterns("/user/lambdaRegister")
+                .excludePathPatterns("/user/login");
 
         registry.addInterceptor(accessLimitInterceptor);
     }

@@ -18,7 +18,7 @@ public class Knife4jConfig {
         Contact contact = new Contact()
                 .name("longfish")
                 .email("longfishes@qq.com");
-        Info info = new Info().title("")
+        Info info = new Info().title("ORCA 系统接口文档")
                 .description("”中软杯“ A10 智能编辑器赛道 orca接口文档")
                 .version(version)
                 .contact(contact);

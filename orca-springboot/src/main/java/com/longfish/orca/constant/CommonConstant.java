@@ -11,4 +11,6 @@ public interface CommonConstant {
     String UNKNOWN = "未知";
 
     String APPLICATION_JSON = "application/json;charset=utf-8";
+
+    String USERNAME_CHECK_REGEX = "^(?!\\d+$)[a-zA-Z0-9_]{2,49}$";
 }

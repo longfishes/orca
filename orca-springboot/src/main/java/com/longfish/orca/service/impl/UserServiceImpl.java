@@ -1,10 +1,32 @@
 package com.longfish.orca.service.impl;
 
-import com.longfish.orca.pojo.entity.User;
-import com.longfish.orca.mapper.UserMapper;
-import com.longfish.orca.service.IUserService;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.longfish.orca.context.BaseContext;
+import com.longfish.orca.enums.StatusCodeEnum;
+import com.longfish.orca.exception.BizException;
+import com.longfish.orca.mapper.UserMapper;
+import com.longfish.orca.pojo.dto.*;
+import com.longfish.orca.pojo.entity.User;
+import com.longfish.orca.pojo.vo.UserVO;
+import com.longfish.orca.properties.JwtProperties;
+import com.longfish.orca.service.IUserService;
+import com.longfish.orca.util.*;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import static com.longfish.orca.constant.CommonConstant.*;
 
 /**
  * <p>
@@ -15,6 +37,374 @@ import org.springframework.stereotype.Service;
  * @since 2024-05-16
  */
 @Service
+@Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 
+    @Autowired
+    private JwtProperties jwtProperties;
+
+    @Autowired
+    private CodeUtil codeUtil;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private HttpServletRequest request;
+
+    @Override
+    public Boolean usernameUniqueCheck(String username) {
+        if (!Pattern.compile(USERNAME_CHECK_REGEX).matcher(username).matches()) {
+            throw new BizException(StatusCodeEnum.USERNAME_FORMAT_ERROR);
+        }
+        return lambdaQuery(User.builder().username(username).build()).exists();
+    }
+
+    @Override
+    public String login(LambdaLoginDTO lambdaLoginDTO) {
+        log.info("用户 {} 登录 @ {}", lambdaLoginDTO, LocalDateTime.now());
+
+        if (lambdaLoginDTO.getUsername() == null || lambdaLoginDTO.getUsername().equals("")) {
+            throw new BizException(StatusCodeEnum.USER_IS_NULL);
+        }
+
+        boolean isPhone = PhoneUtil.isValid(lambdaLoginDTO.getUsername());
+        boolean isEmail = EmailUtil.isValid(lambdaLoginDTO.getUsername());
+
+        if (!isPhone && !isEmail && !usernameUniqueCheck(lambdaLoginDTO.getUsername())) {
+            throw new BizException(StatusCodeEnum.USERNAME_OR_PASSWORD_ERROR);
+        }
+
+        User query = User.builder().password(DigestUtils.md5DigestAsHex(lambdaLoginDTO.getPassword().getBytes())).build();
+        if (isPhone) query.setPhone(lambdaLoginDTO.getUsername());
+        else if (isEmail) query.setEmail(lambdaLoginDTO.getUsername());
+        else query.setUsername(lambdaLoginDTO.getUsername());
+
+        User result = lambdaQuery(query).one();
+        if (result == null) {
+            throw new BizException(StatusCodeEnum.USERNAME_OR_PASSWORD_ERROR);
+        }
+
+        String ipAddress = IpUtil.getIpAddress(request);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+
+        result.setIpAddress(ipAddress);
+        result.setIpSource(ipSource);
+        result.setLastLoginTime(LocalDateTime.now());
+        updateById(result);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(USER_ID, result.getId());
+
+        return JwtUtil.createJWT(
+                jwtProperties.getSecretKey(),
+                jwtProperties.getTtl(),
+                claims);
+    }
+
+    @Override
+    public String codeLogin(LambdaCodeLoginDTO lambdaCodeLoginDTO) {
+        log.info("用户 {} 登录 @ {}", lambdaCodeLoginDTO, LocalDateTime.now());
+
+        if (lambdaCodeLoginDTO.getUsername() == null || lambdaCodeLoginDTO.getUsername().equals("")) {
+            throw new BizException(StatusCodeEnum.USER_IS_NULL);
+        }
+
+        boolean isPhone = PhoneUtil.isValid(lambdaCodeLoginDTO.getUsername());
+        boolean isEmail = EmailUtil.isValid(lambdaCodeLoginDTO.getUsername());
+
+        if (!isPhone && !isEmail) {
+            throw new BizException(StatusCodeEnum.USER_NOT_EXIST);
+        }
+
+        User query = User.builder().build();
+        if (isPhone) query.setPhone(lambdaCodeLoginDTO.getUsername());
+        else query.setEmail(lambdaCodeLoginDTO.getUsername());
+        User result = lambdaQuery(query).one();
+
+        if (result == null) {
+            throw new BizException(StatusCodeEnum.USER_NOT_EXIST);
+        }
+
+        String username = codeUtil.get(lambdaCodeLoginDTO.getUsername());
+        if (username == null) {
+            throw new BizException(StatusCodeEnum.CODE_ERROR);
+        }
+
+        String ipAddress = IpUtil.getIpAddress(request);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+
+        result.setIpAddress(ipAddress);
+        result.setIpSource(ipSource);
+        result.setLastLoginTime(LocalDateTime.now());
+        updateById(result);
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(USER_ID, result.getId());
+
+        return JwtUtil.createJWT(
+                jwtProperties.getSecretKey(),
+                jwtProperties.getTtl(),
+                claims);
+    }
+
+    @Override
+    public void register(RegDTO regDTO) {
+        if (!Pattern.compile(USERNAME_CHECK_REGEX).matcher(regDTO.getUsername()).matches()) {
+            throw new BizException(StatusCodeEnum.USERNAME_FORMAT_ERROR);
+        }
+
+        if (regDTO.getPassword().equals("")) {
+            throw new BizException("密码不能为空");
+        }
+
+        boolean isPhone = PhoneUtil.isValid(regDTO.getEmailOrPhone());
+        boolean isEmail = EmailUtil.isValid(regDTO.getEmailOrPhone());
+
+        if (!isEmail && !isPhone) {
+            throw new BizException(StatusCodeEnum.FORMAT_ERROR);
+        }
+        if (isPhone) {
+            PhoneRegDTO phoneRegDTO = BeanUtil.copyProperties(regDTO, PhoneRegDTO.class);
+            phoneRegDTO.setPhone(regDTO.getEmailOrPhone());
+            phoneRegister(phoneRegDTO);
+        } else {
+            EmailRegDTO emailRegDTO = BeanUtil.copyProperties(regDTO, EmailRegDTO.class);
+            emailRegDTO.setEmail(regDTO.getEmailOrPhone());
+            emailRegister(emailRegDTO);
+        }
+    }
+
+    private void emailRegister(EmailRegDTO emailRegDTO) {
+        if (usernameUniqueCheck(emailRegDTO.getUsername())) {
+            throw new BizException(StatusCodeEnum.USER_EXIST);
+        }
+
+        String code = codeUtil.get(emailRegDTO.getEmail());
+        if (code == null || !code.equals(emailRegDTO.getCode())){
+            throw new BizException(StatusCodeEnum.CODE_ERROR);
+        }
+        if (lambdaQuery().eq(User::getEmail, emailRegDTO.getEmail()).exists()) {
+            throw new BizException(StatusCodeEnum.EMAIL_EXIST);
+        }
+
+        User save = BeanUtil.copyProperties(emailRegDTO, User.class);
+        save.setPassword(DigestUtils.md5DigestAsHex(emailRegDTO.getPassword().getBytes()));
+        save.setCreateTime(LocalDateTime.now());
+        save.setUpdateTime(LocalDateTime.now());
+        String ipAddress = IpUtil.getIpAddress(request);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+        save.setIpAddress(ipAddress);
+        save.setIpSource(ipSource);
+        save(save);
+    }
+
+    private void phoneRegister(PhoneRegDTO phoneRegDTO) {
+        if (usernameUniqueCheck(phoneRegDTO.getUsername())) {
+            throw new BizException(StatusCodeEnum.USER_EXIST);
+        }
+
+        String code = codeUtil.get(phoneRegDTO.getPhone());
+        if (code == null || !code.equals(phoneRegDTO.getCode())){
+            throw new BizException(StatusCodeEnum.CODE_ERROR);
+        }
+        if (lambdaQuery().eq(User::getPhone, phoneRegDTO.getPhone()).exists()) {
+            throw new BizException(StatusCodeEnum.PHONE_EXIST);
+        }
+
+        User save = BeanUtil.copyProperties(phoneRegDTO, User.class);
+        save.setPassword(DigestUtils.md5DigestAsHex(phoneRegDTO.getPassword().getBytes()));
+        save.setCreateTime(LocalDateTime.now());
+        save.setUpdateTime(LocalDateTime.now());
+        String ipAddress = IpUtil.getIpAddress(request);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+        save.setIpAddress(ipAddress);
+        save.setIpSource(ipSource);
+        save(save);
+    }
+
+    @Override
+    public void code(String username) {
+        boolean isPhone = PhoneUtil.isValid(username);
+        boolean isEmail = EmailUtil.isValid(username);
+
+        if (!isEmail && !isPhone) {
+            throw new BizException(StatusCodeEnum.FORMAT_ERROR);
+        }
+
+        String code = codeUtil.getRandomCode();
+        codeUtil.insert(username, code);
+
+//TODO 开启手机 & 邮箱验证码 发送
+
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("content", code);
+//
+//        if (isEmail) {
+//            EmailDTO emailDTO = EmailDTO.builder()
+//                    .email(username)
+//                    .subject("验证码")
+//                    .template("code.html")
+//                    .commentMap(map)
+//                    .build();
+//            rabbitTemplate.convertAndSend(RabbitMQConstant.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
+//        } else {
+//
+//        }
+    }
+
+    @Override
+    public UserVO me() {
+        User result = getById(BaseContext.getCurrentId());
+        UserVO userVO = BeanUtil.copyProperties(result, UserVO.class);
+        userVO.setUpdateTime(result.getUpdateTime().format(DateTimeFormatter.ofPattern(PATTERN)));
+        userVO.setCreateTime(result.getCreateTime().format(DateTimeFormatter.ofPattern(PATTERN)));
+        userVO.setLastLoginTime(result.getLastLoginTime().format(DateTimeFormatter.ofPattern(PATTERN)));
+        return userVO;
+    }
+
+    @Override
+    public void forgot(ForgotDTO forgotDTO) {
+        boolean isPhone = PhoneUtil.isValid(forgotDTO.getUsername());
+        boolean isEmail = EmailUtil.isValid(forgotDTO.getUsername());
+
+        if (!isEmail && !isPhone) {
+            throw new BizException(StatusCodeEnum.FORMAT_ERROR);
+        }
+        if (forgotDTO.getPassword().equals("")) {
+            throw new BizException("密码不能为空");
+        }
+
+        User query = User.builder().build();
+        if (isPhone) query.setPhone(forgotDTO.getUsername());
+        else query.setEmail(forgotDTO.getUsername());
+        User result = lambdaQuery(query).one();
+
+        if (result == null) {
+            throw new BizException(StatusCodeEnum.USER_NOT_EXIST);
+        }
+        String code = codeUtil.get(forgotDTO.getUsername());
+        if (code == null || !code.equals(forgotDTO.getCode())){
+            throw new BizException(StatusCodeEnum.CODE_ERROR);
+        }
+
+        User update = User.builder()
+                .id(query.getId())
+                .password(DigestUtils.md5DigestAsHex(forgotDTO.getPassword().getBytes()))
+                .updateTime(LocalDateTime.now())
+                .build();
+        updateById(update);
+    }
+
+    @Override
+    public void updateInfo(UserInfoDTO userInfoDTO) {
+        User update = User.builder().build();
+
+        if (!userInfoDTO.getNickname().equals("")) {
+            update.setNickname(userInfoDTO.getNickname());
+        }
+        if (!userInfoDTO.getAvatar().equals("")) {
+            update.setAvatar(userInfoDTO.getAvatar());
+        }
+        if (!userInfoDTO.getInfo().equals("")) {
+            update.setInfo(userInfoDTO.getInfo());
+        }
+        if (userInfoDTO.getGender() != 0) {
+            update.setGender(userInfoDTO.getGender());
+        }
+        if (!userInfoDTO.getBirthday().equals("")) {
+            try {
+                update.setBirthday(LocalDate.parse(userInfoDTO.getBirthday()));
+            } catch (Exception e) {
+                throw new BizException(StatusCodeEnum.DATE_FORMAT_ERROR);
+            }
+        }
+        if (!userInfoDTO.getLocation().equals("")) {
+            update.setLocation(userInfoDTO.getLocation());
+        }
+
+        update.setId(BaseContext.getCurrentId());
+
+        String ipAddress = IpUtil.getIpAddress(request);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+
+        update.setIpAddress(ipAddress);
+        update.setIpSource(ipSource);
+        update.setUpdateTime(LocalDateTime.now());
+
+        updateById(update);
+    }
+
+    @Override
+    public void editPassword(PasswordEditDTO passwordEditDTO) {
+        User result = getById(BaseContext.getCurrentId());
+
+        if (passwordEditDTO.getNewPassword().equals("")) {
+            throw new BizException("密码不能为空");
+        }
+        if (!DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes()).equals(result.getPassword())) {
+            throw new BizException(StatusCodeEnum.PASSWORD_ERROR);
+        }
+        User update = User.builder()
+                .id(result.getId())
+                .password(DigestUtils.md5DigestAsHex(passwordEditDTO.getNewPassword().getBytes()))
+                .updateTime(LocalDateTime.now())
+                .build();
+        updateById(update);
+    }
+
+    @Override
+    public void editUsername(UsernameDTO usernameDTO) {
+        if (!Pattern.compile(USERNAME_CHECK_REGEX).matcher(usernameDTO.getUsername()).matches()) {
+            throw new BizException(StatusCodeEnum.USERNAME_FORMAT_ERROR);
+        }
+        if (usernameUniqueCheck(usernameDTO.getUsername())) {
+            throw new BizException(StatusCodeEnum.USER_EXIST);
+        }
+        User update = User.builder()
+                .id(BaseContext.getCurrentId())
+                .username(usernameDTO.getUsername())
+                .build();
+        updateById(update);
+    }
+
+    @Override
+    public void bindPhone(PhoneBindDTO phoneBindDTO) {
+        if (!PhoneUtil.isValid(phoneBindDTO.getPhone())) {
+            throw new BizException(StatusCodeEnum.FORMAT_ERROR);
+        }
+        User result = getById(BaseContext.getCurrentId());
+        if (result.getPhone() != null) {
+            throw new BizException(StatusCodeEnum.PHONE_EXIST);
+        }
+        if (!codeUtil.get(phoneBindDTO.getPhone()).equals(phoneBindDTO.getCode())) {
+            throw new BizException(StatusCodeEnum.CODE_ERROR);
+        }
+        if (lambdaQuery().eq(User::getPhone, phoneBindDTO.getPhone()).exists()) {
+            throw new BizException(StatusCodeEnum.PHONE_EXIST);
+        }
+        User update = User.builder().id(result.getId()).phone(phoneBindDTO.getPhone()).build();
+        updateById(update);
+    }
+
+    @Override
+    public void bindEmail(EmailBindDTO emailBindDTO) {
+        if (!EmailUtil.isValid(emailBindDTO.getEmail())) {
+            throw new BizException(StatusCodeEnum.FORMAT_ERROR);
+        }
+        User result = getById(BaseContext.getCurrentId());
+        if (result.getEmail() != null) {
+            throw new BizException(StatusCodeEnum.EMAIL_EXIST);
+        }
+
+        String code = codeUtil.get(emailBindDTO.getEmail());
+        if (code == null || !code.equals(emailBindDTO.getCode())) {
+            throw new BizException(StatusCodeEnum.CODE_ERROR);
+        }
+        if (lambdaQuery().eq(User::getEmail, emailBindDTO.getEmail()).exists()) {
+            throw new BizException(StatusCodeEnum.EMAIL_EXIST);
+        }
+        User update = User.builder().id(result.getId()).email(emailBindDTO.getEmail()).build();
+        updateById(update);
+    }
 }

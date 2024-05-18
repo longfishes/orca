@@ -43,7 +43,7 @@ public class EmailUtil {
         }
     }
 
-    public boolean check(String email) {
+    public static boolean isValid(String email) {
         String EMAIL_PATTERN = "^[A-Za-z0-9_]+([.\\-][A-Za-z0-9_]+)*@[A-Za-z0-9]+([.\\-][A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         Pattern pattern = Pattern.compile(EMAIL_PATTERN);
         Matcher matcher = pattern.matcher(email);

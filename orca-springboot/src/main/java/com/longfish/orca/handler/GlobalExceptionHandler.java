@@ -32,12 +32,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public Result formatExceptionHandler(NullPointerException ex) {
-        log.error("参数格式错误, {}", ex.getMessage());
-        return Result.error(StatusCodeEnum.VALID_ERROR);
-    }
-
-    @ExceptionHandler
     public Result formatExceptionHandler(HttpMessageNotReadableException ex) {
         log.error("参数格式错误, {}", ex.getMessage());
         return Result.error(StatusCodeEnum.VALID_ERROR);
@@ -60,6 +54,6 @@ public class GlobalExceptionHandler {
         log.error("异常信息：{}", ex.getMessage());
         ex.printStackTrace();
         resp.setStatus(500);
-        return Result.error(StatusCodeEnum.FAIL);
+        return Result.error(StatusCodeEnum.SYSTEM_ERROR);
     }
 }

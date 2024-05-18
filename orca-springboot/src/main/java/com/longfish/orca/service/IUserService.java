@@ -1,7 +1,9 @@
 package com.longfish.orca.service;
 
-import com.longfish.orca.pojo.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.longfish.orca.pojo.dto.*;
+import com.longfish.orca.pojo.entity.User;
+import com.longfish.orca.pojo.vo.UserVO;
 
 /**
  * <p>
@@ -13,4 +15,27 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IUserService extends IService<User> {
 
+    Boolean usernameUniqueCheck(String username);
+
+    String login(LambdaLoginDTO lambdaLoginDTO);
+
+    String codeLogin(LambdaCodeLoginDTO lambdaCodeLoginDTO);
+
+    void code(String username);
+
+    UserVO me();
+
+    void register(RegDTO regDTO);
+
+    void forgot(ForgotDTO forgotDTO);
+
+    void updateInfo(UserInfoDTO userInfoDTO);
+
+    void editPassword(PasswordEditDTO passwordEditDTO);
+
+    void editUsername(UsernameDTO usernameDTO);
+
+    void bindPhone(PhoneBindDTO phoneBindDTO);
+
+    void bindEmail(EmailBindDTO emailBindDTO);
 }

@@ -17,7 +17,7 @@ import static com.longfish.orca.constant.CommonConstant.USER_ID;
 
 @Component
 @Slf4j
-public class JwtTokenUserInterceptor implements HandlerInterceptor {
+public class JwtTokenInterceptor implements HandlerInterceptor {
 
     @Value("${jwt.secret-key}")
     private String secretKey;
@@ -37,7 +37,6 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
 
         String token = req.getHeader(tokenName);
         try {
-            log.info("jwt check: {}", token);
             Claims claims = JwtUtil.parseJWT(secretKey, token);
             Long userId = Long.valueOf(claims.get(USER_ID).toString());
             log.info("current id: {}", userId);

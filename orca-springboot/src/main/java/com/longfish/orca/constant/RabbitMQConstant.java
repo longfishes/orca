@@ -4,5 +4,5 @@ public interface RabbitMQConstant {
 
     String EMAIL_QUEUE = "orca.email.queue";
 
-    String EMAIL_EXCHANGE = "orca.email_exchange";
+    String EMAIL_EXCHANGE = "orca.email.exchange";
 }
