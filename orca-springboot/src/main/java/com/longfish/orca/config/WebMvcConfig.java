@@ -29,26 +29,12 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
         registry.addInterceptor(jwtTokenInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/m/**")
-                .excludePathPatterns("/user/forgot")
-                .excludePathPatterns("/user/lambdaLogin")
-                .excludePathPatterns("/user/lambdaCodeLogin")
-                .excludePathPatterns("/user/uniqueCheck")
-                .excludePathPatterns("/user/code")
-                .excludePathPatterns("/user/lambdaRegister")
-                .excludePathPatterns("/user/login");
-
-        registry.addInterceptor(accessLimitInterceptor);
+                .excludePathPatterns("/m/**");
 
         registry.addInterceptor(mobileCurrentIdInterceptor)
-                .addPathPatterns("/m/**")
-                .excludePathPatterns("/m/user/lambdaLogin")
-                .excludePathPatterns("/m/user/lambdaCodeLogin")
-                .excludePathPatterns("/m/user/uniqueCheck")
-                .excludePathPatterns("/m/user/code")
-                .excludePathPatterns("/m/user/lambdaRegister")
-                .excludePathPatterns("/m/user/forgot")
-                .excludePathPatterns("/m/user/login");
+                .addPathPatterns("/m/**");
+
+        registry.addInterceptor(accessLimitInterceptor);
     }
 
     @Override

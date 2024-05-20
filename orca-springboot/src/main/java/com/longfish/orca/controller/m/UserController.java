@@ -2,6 +2,7 @@ package com.longfish.orca.controller.m;
 
 
 import com.longfish.orca.annotation.AccessLimit;
+import com.longfish.orca.annotation.NoLogin;
 import com.longfish.orca.context.BaseContext;
 import com.longfish.orca.context.UploadStrategyContext;
 import com.longfish.orca.enums.FilePathEnum;
@@ -38,18 +39,21 @@ public class UserController {
 
     @Operation(summary = "用户名唯一性检验")
     @GetMapping("/uniqueCheck")
+    @NoLogin
     public Result<?> uniqueCheck(String username) {
         return userService.usernameUniqueCheck(username) ? Result.error(StatusCodeEnum.USER_EXIST) : Result.success();
     }
 
     @PostMapping("/lambdaLogin")
     @Operation(summary = "条件登录密码")
+    @NoLogin
     public Result<MobileLoginVO> login(@RequestBody LambdaLoginDTO lambdaLoginDTO) {
         return Result.success(MobileLoginVO.builder().uid(userService.login4Uid(lambdaLoginDTO)).build());
     }
 
     @PostMapping("/lambdaCodeLogin")
     @Operation(summary = "条件登录验证码")
+    @NoLogin
     public Result<MobileLoginVO> loginByCode(@RequestBody LambdaCodeLoginDTO lambdaCodeLoginDTO) {
         return Result.success(MobileLoginVO.builder().uid(userService.codeLogin4Uid(lambdaCodeLoginDTO)).build());
     }
@@ -64,6 +68,7 @@ public class UserController {
     @Operation(summary = "发送验证码")
     @GetMapping("/code")
     @AccessLimit(seconds = 60, maxCount = 1)
+    @NoLogin
     public Result<?> code(String username) {
         userService.code(username);
         return Result.success();
@@ -71,6 +76,7 @@ public class UserController {
 
     @Operation(summary = "条件注册")
     @PostMapping("/lambdaRegister")
+    @NoLogin
     public Result<?> lambdaRegister(@RequestBody RegDTO regDTO) {
         userService.register(regDTO);
         return Result.success();
@@ -84,6 +90,7 @@ public class UserController {
 
     @Operation(summary = "忘记密码")
     @PostMapping("/forgot")
+    @NoLogin
     public Result<?> forgot(@RequestBody ForgotDTO forgotDTO) {
         userService.forgot(forgotDTO);
         return Result.success();

@@ -1,5 +1,6 @@
 package com.longfish.orca.interceptor;
 
+import com.longfish.orca.annotation.NoLogin;
 import com.longfish.orca.context.BaseContext;
 import com.longfish.orca.enums.StatusCodeEnum;
 import com.longfish.orca.exception.BizException;
@@ -32,6 +33,9 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
             return true;
         }
         if (((HandlerMethod) handler).getBean().getClass().getName().contains("org.springdoc")) {
+            return true;
+        }
+        if (((HandlerMethod) handler).getMethodAnnotation(NoLogin.class) != null) {
             return true;
         }
 
