@@ -4,8 +4,6 @@ import com.longfish.orca.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Random;
-
 import static com.longfish.orca.constant.CommonConstant.CODE;
 
 @Component
@@ -15,14 +13,17 @@ public class CodeUtil {
     private RedisService redisService;
 
     public String getRandomCode() {
-        Random seed = new Random();
-        StringBuilder s = new StringBuilder(String.valueOf(seed.nextInt(1000000)));
-        if (s.length() < 7) {
-            int len = 6 - s.length();
-            for (int i = 0; i < len; i++) {
-                s.insert(0, '0');
-            }
-        }
+
+//        TODO 开启随机验证码
+//        Random seed = new Random();
+//        StringBuilder s = new StringBuilder(String.valueOf(seed.nextInt(1000000)));
+//        if (s.length() < 7) {
+//            int len = 6 - s.length();
+//            for (int i = 0; i < len; i++) {
+//                s.insert(0, '0');
+//            }
+//        }
+        String s = "123456";
         return s.toString();
     }
 

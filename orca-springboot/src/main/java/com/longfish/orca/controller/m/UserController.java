@@ -1,4 +1,4 @@
-package com.longfish.orca.controller;
+package com.longfish.orca.controller.m;
 
 
 import com.longfish.orca.annotation.AccessLimit;
@@ -8,7 +8,7 @@ import com.longfish.orca.enums.FilePathEnum;
 import com.longfish.orca.enums.StatusCodeEnum;
 import com.longfish.orca.pojo.Result;
 import com.longfish.orca.pojo.dto.*;
-import com.longfish.orca.pojo.vo.LoginVO;
+import com.longfish.orca.pojo.vo.MobileLoginVO;
 import com.longfish.orca.pojo.vo.UserVO;
 import com.longfish.orca.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,8 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
  * @author longfish
  * @since 2024-05-16
  */
-@RestController
-@RequestMapping("/user")
+@RestController(value = "mUserController")
+@RequestMapping("/m/user")
 @Tag(name = "用户相关")
 public class UserController {
 
@@ -44,14 +44,14 @@ public class UserController {
 
     @PostMapping("/lambdaLogin")
     @Operation(summary = "条件登录密码")
-    public Result<LoginVO> login(@RequestBody LambdaLoginDTO lambdaLoginDTO) {
-        return Result.success(LoginVO.builder().jwt(userService.login(lambdaLoginDTO)).build());
+    public Result<MobileLoginVO> login(@RequestBody LambdaLoginDTO lambdaLoginDTO) {
+        return Result.success(MobileLoginVO.builder().uid(userService.login4Uid(lambdaLoginDTO)).build());
     }
 
     @PostMapping("/lambdaCodeLogin")
     @Operation(summary = "条件登录验证码")
-    public Result<LoginVO> loginByCode(@RequestBody LambdaCodeLoginDTO lambdaCodeLoginDTO) {
-        return Result.success(LoginVO.builder().jwt(userService.codeLogin(lambdaCodeLoginDTO)).build());
+    public Result<MobileLoginVO> loginByCode(@RequestBody LambdaCodeLoginDTO lambdaCodeLoginDTO) {
+        return Result.success(MobileLoginVO.builder().uid(userService.codeLogin4Uid(lambdaCodeLoginDTO)).build());
     }
 
     @GetMapping("/logout")

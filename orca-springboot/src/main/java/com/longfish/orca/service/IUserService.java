@@ -21,6 +21,10 @@ public interface IUserService extends IService<User> {
 
     String codeLogin(LambdaCodeLoginDTO lambdaCodeLoginDTO);
 
+    String login4Uid(LambdaLoginDTO lambdaLoginDTO);
+
+    String codeLogin4Uid(LambdaCodeLoginDTO lambdaCodeLoginDTO);
+
     void code(String username);
 
     UserVO me();

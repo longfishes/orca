@@ -5,6 +5,7 @@ import com.longfish.orca.pojo.entity.User;
 import com.longfish.orca.properties.*;
 import com.longfish.orca.service.IUserService;
 import com.longfish.orca.context.UploadStrategyContext;
+import com.longfish.orca.util.AESEncryptUtil;
 import com.longfish.orca.util.CodeUtil;
 import com.longfish.orca.util.IpUtil;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,18 @@ class OrcaSpringbootApplicationTests {
 
 	@Autowired
 	private UploadStrategyContext uploadStrategyContext;
+
+	@Autowired
+	private MobileProperties mobileProperties;
+
+	@Autowired
+	private AESEncryptUtil aesEncryptUtil;
+
+	@Test
+	public void testAES() {
+		String encrypt = aesEncryptUtil.encrypt("sb");
+		System.out.println(aesEncryptUtil.decrypt(encrypt));
+	}
 
 	@Test
 	void testUpload() {
@@ -98,6 +111,7 @@ class OrcaSpringbootApplicationTests {
 		System.out.println(ossConfigProperties);
 		System.out.println(minioProperties);
 		System.out.println(localProperties);
+		System.out.println(mobileProperties);
 	}
 
 	@Test

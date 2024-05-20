@@ -13,7 +13,7 @@ public class BaseContext {
     }
 
     public static Long getCurrentId() {
-        if (threadLocal.get() == null){
+        if (threadLocal.get() == null) {
             throw new BizException(StatusCodeEnum.NO_LOGIN);
         }
         return threadLocal.get();

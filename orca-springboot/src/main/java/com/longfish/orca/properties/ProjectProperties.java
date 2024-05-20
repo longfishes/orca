@@ -10,4 +10,6 @@ import org.springframework.stereotype.Component;
 public class ProjectProperties {
 
     private String version;
+
+    private String aesSecretKey;
 }

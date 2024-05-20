@@ -30,7 +30,7 @@ import static com.longfish.orca.constant.CommonConstant.*;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author longfish
@@ -45,6 +45,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Autowired
     private CodeUtil codeUtil;
+
+    @Autowired
+    private AESEncryptUtil aesEncryptUtil;
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -149,6 +152,82 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
+    public String login4Uid(LambdaLoginDTO lambdaLoginDTO) {
+        log.info("用户 {} 登录 @ {}", lambdaLoginDTO, LocalDateTime.now());
+
+        if (lambdaLoginDTO.getUsername() == null || lambdaLoginDTO.getUsername().equals("")) {
+            throw new BizException(StatusCodeEnum.USER_IS_NULL);
+        }
+
+        boolean isPhone = PhoneUtil.isValid(lambdaLoginDTO.getUsername());
+        boolean isEmail = EmailUtil.isValid(lambdaLoginDTO.getUsername());
+
+        if (!isPhone && !isEmail && !usernameUniqueCheck(lambdaLoginDTO.getUsername())) {
+            throw new BizException(StatusCodeEnum.USERNAME_OR_PASSWORD_ERROR);
+        }
+
+        User query = User.builder().password(DigestUtils.md5DigestAsHex(lambdaLoginDTO.getPassword().getBytes())).build();
+        if (isPhone) query.setPhone(lambdaLoginDTO.getUsername());
+        else if (isEmail) query.setEmail(lambdaLoginDTO.getUsername());
+        else query.setUsername(lambdaLoginDTO.getUsername());
+
+        User result = lambdaQuery(query).one();
+        if (result == null) {
+            throw new BizException(StatusCodeEnum.USERNAME_OR_PASSWORD_ERROR);
+        }
+
+        String ipAddress = IpUtil.getIpAddress(request);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+
+        result.setIpAddress(ipAddress);
+        result.setIpSource(ipSource);
+        result.setLastLoginTime(LocalDateTime.now());
+        updateById(result);
+
+        return aesEncryptUtil.encrypt(result.getId().toString());
+    }
+
+    @Override
+    public String codeLogin4Uid(LambdaCodeLoginDTO lambdaCodeLoginDTO) {
+        log.info("用户 {} 登录 @ {}", lambdaCodeLoginDTO, LocalDateTime.now());
+
+        if (lambdaCodeLoginDTO.getUsername() == null || lambdaCodeLoginDTO.getUsername().equals("")) {
+            throw new BizException(StatusCodeEnum.USER_IS_NULL);
+        }
+
+        boolean isPhone = PhoneUtil.isValid(lambdaCodeLoginDTO.getUsername());
+        boolean isEmail = EmailUtil.isValid(lambdaCodeLoginDTO.getUsername());
+
+        if (!isPhone && !isEmail) {
+            throw new BizException(StatusCodeEnum.USER_NOT_EXIST);
+        }
+
+        User query = User.builder().build();
+        if (isPhone) query.setPhone(lambdaCodeLoginDTO.getUsername());
+        else query.setEmail(lambdaCodeLoginDTO.getUsername());
+        User result = lambdaQuery(query).one();
+
+        if (result == null) {
+            throw new BizException(StatusCodeEnum.USER_NOT_EXIST);
+        }
+
+        String username = codeUtil.get(lambdaCodeLoginDTO.getUsername());
+        if (username == null) {
+            throw new BizException(StatusCodeEnum.CODE_ERROR);
+        }
+
+        String ipAddress = IpUtil.getIpAddress(request);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+
+        result.setIpAddress(ipAddress);
+        result.setIpSource(ipSource);
+        result.setLastLoginTime(LocalDateTime.now());
+        updateById(result);
+
+        return aesEncryptUtil.encrypt(result.getId().toString());
+    }
+
+    @Override
     public void register(RegDTO regDTO) {
         if (!Pattern.compile(USERNAME_CHECK_REGEX).matcher(regDTO.getUsername()).matches()) {
             throw new BizException(StatusCodeEnum.USERNAME_FORMAT_ERROR);
@@ -181,7 +260,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
 
         String code = codeUtil.get(emailRegDTO.getEmail());
-        if (code == null || !code.equals(emailRegDTO.getCode())){
+        if (code == null || !code.equals(emailRegDTO.getCode())) {
             throw new BizException(StatusCodeEnum.CODE_ERROR);
         }
         if (lambdaQuery().eq(User::getEmail, emailRegDTO.getEmail()).exists()) {
@@ -205,7 +284,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
 
         String code = codeUtil.get(phoneRegDTO.getPhone());
-        if (code == null || !code.equals(phoneRegDTO.getCode())){
+        if (code == null || !code.equals(phoneRegDTO.getCode())) {
             throw new BizException(StatusCodeEnum.CODE_ERROR);
         }
         if (lambdaQuery().eq(User::getPhone, phoneRegDTO.getPhone()).exists()) {
@@ -257,10 +336,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public UserVO me() {
         User result = getById(BaseContext.getCurrentId());
         UserVO userVO = BeanUtil.copyProperties(result, UserVO.class);
-        userVO.setUpdateTime(result.getUpdateTime().format(DateTimeFormatter.ofPattern(PATTERN)));
-        userVO.setCreateTime(result.getCreateTime().format(DateTimeFormatter.ofPattern(PATTERN)));
-        userVO.setLastLoginTime(result.getLastLoginTime().format(DateTimeFormatter.ofPattern(PATTERN)));
+        LocalDateTime updateTime = result.getUpdateTime();
+        if (updateTime != null) {
+            userVO.setUpdateTime(updateTime.format(DateTimeFormatter.ofPattern(PATTERN)));
+        }
+        LocalDateTime createTime = result.getCreateTime();
+        if (createTime != null) {
+            userVO.setCreateTime(createTime.format(DateTimeFormatter.ofPattern(PATTERN)));
+        }
+        LocalDateTime lastLoginTime = result.getLastLoginTime();
+        if (lastLoginTime != null) {
+            userVO.setLastLoginTime(lastLoginTime.format(DateTimeFormatter.ofPattern(PATTERN)));
+        }
         return userVO;
+
     }
 
     @Override
@@ -284,7 +373,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new BizException(StatusCodeEnum.USER_NOT_EXIST);
         }
         String code = codeUtil.get(forgotDTO.getUsername());
-        if (code == null || !code.equals(forgotDTO.getCode())){
+        if (code == null || !code.equals(forgotDTO.getCode())) {
             throw new BizException(StatusCodeEnum.CODE_ERROR);
         }
 

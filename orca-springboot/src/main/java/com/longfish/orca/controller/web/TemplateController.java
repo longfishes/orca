@@ -1,4 +1,4 @@
-package com.longfish.orca.controller;
+package com.longfish.orca.controller.web;
 
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2024-05-16
  */
 @RestController
-@RequestMapping("/document")
-public class DocumentController {
+@RequestMapping("/template")
+public class TemplateController {
 
 }

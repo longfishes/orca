@@ -10,6 +10,5 @@ public class SystemTask {
 
     @Scheduled(cron = "0/30 * * * * ?")
     public void heartBeat() {
-        log.info("heart beat...");
     }
 }
