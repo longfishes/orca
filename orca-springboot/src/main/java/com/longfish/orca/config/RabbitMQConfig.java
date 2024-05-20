@@ -7,8 +7,7 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.longfish.orca.constant.RabbitMQConstant.EMAIL_EXCHANGE;
-import static com.longfish.orca.constant.RabbitMQConstant.EMAIL_QUEUE;
+import static com.longfish.orca.constant.RabbitMQConstant.*;
 
 @Configuration
 public class RabbitMQConfig {
@@ -25,6 +24,21 @@ public class RabbitMQConfig {
 
     @Bean
     public Binding bindingEmailDirect() {
+        return BindingBuilder.bind(emailQueue()).to(emailExchange());
+    }
+
+    @Bean
+    public Queue phoneQueue() {
+        return new Queue(PHONE_QUEUE, true);
+    }
+
+    @Bean
+    public FanoutExchange phoneExchange() {
+        return new FanoutExchange(PHONE_EXCHANGE, true, false);
+    }
+
+    @Bean
+    public Binding bindingPhoneDirect() {
         return BindingBuilder.bind(emailQueue()).to(emailExchange());
     }
 

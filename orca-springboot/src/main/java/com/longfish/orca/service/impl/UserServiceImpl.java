@@ -21,12 +21,12 @@ import org.springframework.util.DigestUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static com.longfish.orca.constant.CommonConstant.*;
+import static com.longfish.orca.constant.CommonConstant.USERNAME_CHECK_REGEX;
+import static com.longfish.orca.constant.CommonConstant.USER_ID;
 
 /**
  * <p>
@@ -335,20 +335,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public UserVO me() {
         User result = getById(BaseContext.getCurrentId());
-        UserVO userVO = BeanUtil.copyProperties(result, UserVO.class);
-        LocalDateTime updateTime = result.getUpdateTime();
-        if (updateTime != null) {
-            userVO.setUpdateTime(updateTime.format(DateTimeFormatter.ofPattern(PATTERN)));
-        }
-        LocalDateTime createTime = result.getCreateTime();
-        if (createTime != null) {
-            userVO.setCreateTime(createTime.format(DateTimeFormatter.ofPattern(PATTERN)));
-        }
-        LocalDateTime lastLoginTime = result.getLastLoginTime();
-        if (lastLoginTime != null) {
-            userVO.setLastLoginTime(lastLoginTime.format(DateTimeFormatter.ofPattern(PATTERN)));
-        }
-        return userVO;
+        return BeanUtil.copyProperties(result, UserVO.class);
 
     }
 
