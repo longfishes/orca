@@ -421,10 +421,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (!DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes()).equals(result.getPassword())) {
             throw new BizException(StatusCodeEnum.PASSWORD_ERROR);
         }
+
+        String ipAddress = IpUtil.getIpAddress(request);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+
         User update = User.builder()
                 .id(result.getId())
                 .password(DigestUtils.md5DigestAsHex(passwordEditDTO.getNewPassword().getBytes()))
                 .updateTime(LocalDateTime.now())
+                .ipAddress(ipAddress)
+                .ipSource(ipSource)
                 .build();
         updateById(update);
     }
@@ -437,9 +443,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (usernameUniqueCheck(usernameDTO.getUsername())) {
             throw new BizException(StatusCodeEnum.USER_EXIST);
         }
+
+        String ipAddress = IpUtil.getIpAddress(request);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+
         User update = User.builder()
                 .id(BaseContext.getCurrentId())
                 .username(usernameDTO.getUsername())
+                .ipAddress(ipAddress)
+                .ipSource(ipSource)
                 .build();
         updateById(update);
     }
@@ -459,7 +471,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (lambdaQuery().eq(User::getPhone, phoneBindDTO.getPhone()).exists()) {
             throw new BizException(StatusCodeEnum.PHONE_EXIST);
         }
-        User update = User.builder().id(result.getId()).phone(phoneBindDTO.getPhone()).build();
+        String ipAddress = IpUtil.getIpAddress(request);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+
+        User update = User.builder()
+                .id(result.getId())
+                .phone(phoneBindDTO.getPhone())
+                .ipAddress(ipAddress)
+                .ipSource(ipSource)
+                .build();
+
         updateById(update);
     }
 
@@ -480,7 +501,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (lambdaQuery().eq(User::getEmail, emailBindDTO.getEmail()).exists()) {
             throw new BizException(StatusCodeEnum.EMAIL_EXIST);
         }
-        User update = User.builder().id(result.getId()).email(emailBindDTO.getEmail()).build();
+        String ipAddress = IpUtil.getIpAddress(request);
+        String ipSource = IpUtil.getIpSource(ipAddress);
+
+        User update = User.builder()
+                .id(result.getId())
+                .email(emailBindDTO.getEmail())
+                .ipAddress(ipAddress)
+                .ipSource(ipSource)
+                .build();
+
         updateById(update);
     }
 }

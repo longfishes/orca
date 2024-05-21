@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static com.longfish.orca.constant.CommonConstant.DATE_PATTERN;
+import static com.longfish.orca.constant.CommonConstant.PATTERN;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -29,7 +32,7 @@ public class UserVO {
 
     private Integer gender;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = DATE_PATTERN)
     private LocalDate birthday;
 
     private String location;
@@ -38,12 +41,12 @@ public class UserVO {
 
     private String ipSource;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = PATTERN)
     private LocalDateTime createTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = PATTERN)
     private LocalDateTime updateTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = PATTERN)
     private LocalDateTime lastLoginTime;
 }

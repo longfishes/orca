@@ -1,9 +1,19 @@
 package com.longfish.orca.controller.web;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.longfish.orca.pojo.Result;
+import com.longfish.orca.pojo.dto.DocumentDTO;
+import com.longfish.orca.pojo.dto.PageDTO;
+import com.longfish.orca.pojo.entity.Document;
+import com.longfish.orca.pojo.vo.DocumentAbstractVO;
+import com.longfish.orca.pojo.vo.PageVO;
+import com.longfish.orca.service.IDocumentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 /**
  * <p>
@@ -15,6 +25,68 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/document")
+@Tag(name = "文档相关")
 public class DocumentController {
 
+    @Autowired
+    private IDocumentService documentService;
+
+    @Operation(summary = "创建新文档")
+    @PostMapping("/create")
+    public Result<?> create(@RequestBody DocumentDTO documentDTO) {
+        documentService.create(documentDTO);
+        return Result.success();
+    }
+
+    @Operation(summary = "分页条件查询")
+    @PostMapping("/list")
+    public Result<PageVO<DocumentAbstractVO>> list(@RequestBody PageDTO pageDTO) {
+        return Result.success(documentService.listAll(pageDTO));
+    }
+
+    @Operation(summary = "获取置顶文档摘要")
+    @GetMapping("/top")
+    public Result<List<DocumentAbstractVO>> top() {
+        return Result.success(documentService.top());
+    }
+
+    @Operation(summary = "获取回收站文档摘要")
+    @GetMapping("/trash")
+    public Result<List<DocumentAbstractVO>> trash() {
+        return Result.success(documentService.trash());
+    }
+
+    @Operation(summary = "根据id获取文档详情")
+    @GetMapping("/{id}")
+    public Result<Document> getById(@PathVariable Long id) {
+        return Result.success(documentService.id(id));
+    }
+
+    @Operation(summary = "根据id逻辑删除文档")
+    @DeleteMapping("/{id}")
+    public Result<?> deleteById(@PathVariable Long id) {
+        documentService.deleteById(id);
+        return Result.success();
+    }
+
+    @Operation(summary = "批量逻辑删除文档")
+    @DeleteMapping("/batch/{ids}")
+    public Result<?> deleteByIdBatch(@PathVariable List<Long> ids) {
+        documentService.deleteByIdBatch(ids);
+        return Result.success();
+    }
+
+    @Operation(summary = "根据id物理删除文档")
+    @DeleteMapping("/delete/{id}")
+    public Result<?> deleteByIdTruly(@PathVariable Long id) {
+        documentService.deleteByIdTruly(id);
+        return Result.success();
+    }
+
+    @Operation(summary = "批量物理删除文档")
+    @DeleteMapping("/delete/batch/{ids}")
+    public Result<?> deleteByIdBatchTruly(@PathVariable List<Long> ids) {
+        documentService.deleteByIdBatchTruly(ids);
+        return Result.success();
+    }
 }
