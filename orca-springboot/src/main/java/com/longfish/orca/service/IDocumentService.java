@@ -36,4 +36,10 @@ public interface IDocumentService extends IService<Document> {
     void deleteByIdTruly(Long id);
 
     void deleteByIdBatchTruly(List<Long> ids);
+
+    void restore(Long id);
+
+    void restoreBatch(List<Long> ids);
+
+    List<DocumentAbstractVO> path(String path);
 }

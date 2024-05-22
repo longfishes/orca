@@ -129,8 +129,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new BizException(StatusCodeEnum.USER_NOT_EXIST);
         }
 
-        String username = codeUtil.get(lambdaCodeLoginDTO.getUsername());
-        if (username == null) {
+        String code = codeUtil.get(lambdaCodeLoginDTO.getUsername());
+        if (code == null || !code.equals(lambdaCodeLoginDTO.getCode())) {
             throw new BizException(StatusCodeEnum.CODE_ERROR);
         }
 
@@ -211,8 +211,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             throw new BizException(StatusCodeEnum.USER_NOT_EXIST);
         }
 
-        String username = codeUtil.get(lambdaCodeLoginDTO.getUsername());
-        if (username == null) {
+        String code = codeUtil.get(lambdaCodeLoginDTO.getUsername());
+        if (code == null || !code.equals(lambdaCodeLoginDTO.getCode())) {
             throw new BizException(StatusCodeEnum.CODE_ERROR);
         }
 

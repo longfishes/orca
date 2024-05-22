@@ -56,6 +56,12 @@ public class DocumentController {
         return Result.success(documentService.trash());
     }
 
+    @Operation(summary = "根据路径文档摘要")
+    @GetMapping("/path")
+    public Result<List<DocumentAbstractVO>> path(String path) {
+        return Result.success(documentService.path(path));
+    }
+
     @Operation(summary = "根据id获取文档详情")
     @GetMapping("/{id}")
     public Result<Document> getById(@PathVariable Long id) {
@@ -73,6 +79,20 @@ public class DocumentController {
     @DeleteMapping("/batch/{ids}")
     public Result<?> deleteByIdBatch(@PathVariable List<Long> ids) {
         documentService.deleteByIdBatch(ids);
+        return Result.success();
+    }
+
+    @Operation(summary = "根据id找回文档")
+    @PutMapping("/restore/{id}")
+    public Result<?> restore(@PathVariable Long id) {
+        documentService.restore(id);
+        return Result.success();
+    }
+
+    @Operation(summary = "批量找回文档")
+    @PutMapping("/restore/batch/{ids}")
+    public Result<?> restore(@PathVariable List<Long> ids) {
+        documentService.restoreBatch(ids);
         return Result.success();
     }
 
