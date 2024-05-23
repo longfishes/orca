@@ -1,5 +1,5 @@
 <template>
-  <div>首页架子</div>
+  <div>首页架子3333</div>
 </template>
 
 <script setup></script>
