@@ -153,7 +153,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public String login4Uid(LambdaLoginDTO lambdaLoginDTO) {
-        log.info("用户 {} 登录 @ {}", lambdaLoginDTO, LocalDateTime.now());
+        log.info("用户 {} 尝试登录 @ {}", lambdaLoginDTO, LocalDateTime.now());
 
         if (lambdaLoginDTO.getUsername() == null || lambdaLoginDTO.getUsername().equals("")) {
             throw new BizException(StatusCodeEnum.USER_IS_NULL);
@@ -183,6 +183,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         result.setIpSource(ipSource);
         result.setLastLoginTime(LocalDateTime.now());
         updateById(result);
+
+        log.info("用户 {} 成功登录 @ {}", lambdaLoginDTO, LocalDateTime.now());
 
         return aesEncryptUtil.encrypt(result.getId().toString());
     }

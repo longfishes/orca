@@ -67,7 +67,7 @@ public class UserController {
 
     @Operation(summary = "发送验证码")
     @GetMapping("/code")
-    @AccessLimit(seconds = 60, maxCount = 1)
+    @AccessLimit(seconds = 5, maxCount = 1)
     @NoLogin
     public Result<?> code(String username) {
         userService.code(username);
