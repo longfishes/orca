@@ -1,0 +1,25 @@
+a{
+    text-decoration: none;
+    color: #559bfe;
+}
+.flex {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flexpf {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.flexCenter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+body{
+    font-family: STXihei, "华文细黑", "Microsoft YaHei", "微软雅黑";
+}
