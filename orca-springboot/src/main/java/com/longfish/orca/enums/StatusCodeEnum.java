@@ -7,48 +7,50 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum StatusCodeEnum {
 
-    SUCCESS(200, "操作成功"),
+    SUCCESS(200, "操作成功", 200),
 
-    FAIL(0, "操作失败"),
+    FAIL(0, "操作失败", 200),
 
-    NOT_FOUND(404, "not found"),
+    NOT_FOUND(404, "not found", 404),
 
-    USERNAME_OR_PASSWORD_ERROR(40001, "用户名或密码错误"),
+    USERNAME_OR_PASSWORD_ERROR(40001, "用户名或密码错误", 200),
 
-    NO_LOGIN(40002, "用户未登录"),
+    NO_LOGIN(40002, "用户未登录", 401),
 
-    CODE_ERROR(40003, "验证码错误"),
+    CODE_ERROR(40003, "验证码错误", 200),
 
-    USER_IS_NULL(40004, "用户名不能为空"),
+    USER_IS_NULL(40004, "用户名不能为空", 200),
 
-    USER_EXIST(40005, "用户名已存在"),
+    USER_EXIST(40005, "用户名已存在", 200),
 
-    USER_NOT_EXIST(40006, "用户不存在"),
+    USER_NOT_EXIST(40006, "用户不存在", 200),
 
-    FORMAT_ERROR(40007, "邮箱或手机格式不正确"),
+    FORMAT_ERROR(40007, "邮箱或手机格式不正确", 200),
 
-    USERNAME_FORMAT_ERROR(40008, "用户名格式不正确"),
+    USERNAME_FORMAT_ERROR(40008, "用户名格式不正确", 200),
 
-    DATE_FORMAT_ERROR(40009, "日期格式不正确"),
+    DATE_FORMAT_ERROR(40009, "日期格式不正确", 200),
 
-    PHONE_EXIST(40010, "手机号已经绑定"),
+    PHONE_EXIST(40010, "手机号已经绑定", 200),
 
-    EMAIL_EXIST(40011, "邮箱已经绑定"),
+    EMAIL_EXIST(40011, "邮箱已经绑定", 200),
 
-    AUTHORIZED(40100, "未认证"),
+    AUTHORIZED(40100, "未认证", 401),
 
-    PASSWORD_ERROR(40101, "密码错误"),
+    PASSWORD_ERROR(40101, "密码错误", 200),
 
-    FORBIDDEN(40300, "没有操作权限"),
+    FORBIDDEN(40300, "没有操作权限", 403),
 
-    METHOD_NOT_ALLOWED(40500, "请求方法不允许"),
+    METHOD_NOT_ALLOWED(40500, "请求方法不允许", 403),
 
-    SYSTEM_ERROR(50000, "系统异常"),
+    SYSTEM_ERROR(50000, "系统异常", 500),
 
-    VALID_ERROR(52000, "参数格式不正确");
+    VALID_ERROR(52000, "参数格式不正确", 500);
 
     private final Integer code;
 
     private final String desc;
+
+    private final Integer httpStatusCode;
 
 }

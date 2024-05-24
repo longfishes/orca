@@ -37,7 +37,6 @@ public class MobileCurrentIdInterceptor implements HandlerInterceptor {
                 log.info("current id: {}", curId);
                 BaseContext.setCurrentId(Long.valueOf(curId));
             } catch (Exception e) {
-                resp.setStatus(401);
                 throw new BizException(StatusCodeEnum.NO_LOGIN);
             }
         }

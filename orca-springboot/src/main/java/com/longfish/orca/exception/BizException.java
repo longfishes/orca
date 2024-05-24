@@ -15,15 +15,19 @@ public class BizException extends RuntimeException {
 
     private final String message;
 
+    private final Integer httpStatusCode;
+
     public BizException(StatusCodeEnum statusCodeEnum) {
         this.statusCodeEnum = statusCodeEnum;
         this.code = statusCodeEnum.getCode();
         this.message = statusCodeEnum.getDesc();
+        this.httpStatusCode = statusCodeEnum.getHttpStatusCode();
     }
 
     public BizException(String message) {
         this.code = StatusCodeEnum.FAIL.getCode();
         this.message = message;
+        this.httpStatusCode = StatusCodeEnum.FAIL.getHttpStatusCode();
     }
 
 }

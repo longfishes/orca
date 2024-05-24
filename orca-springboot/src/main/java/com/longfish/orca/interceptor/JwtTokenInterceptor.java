@@ -48,7 +48,6 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
             return true;
 
         } catch (Exception ex) {
-            resp.setStatus(401);
             throw new BizException(StatusCodeEnum.NO_LOGIN);
         }
     }
