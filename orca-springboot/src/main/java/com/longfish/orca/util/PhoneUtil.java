@@ -38,18 +38,14 @@ public class PhoneUtil {
         com.aliyun.dysmsapi20170525.Client client;
         try {
             client = new Client(config);
-        } catch (Exception e) {
-            throw new BizException("验证码发送失败");
-        }
-        SendSmsRequest sendSmsRequest = new SendSmsRequest()
-                .setSignName(smsProperties.getSignName())
-                .setTemplateCode(smsProperties.getTemplateCode())
-                .setPhoneNumbers(smsDTO.getPhone())
-                .setTemplateParam("{\"code\":\"" + smsDTO.getCode() + "\"}");
-        RuntimeOptions runtime = new RuntimeOptions();
-        try {
+            SendSmsRequest sendSmsRequest = new SendSmsRequest()
+                    .setSignName(smsProperties.getSignName())
+                    .setTemplateCode(smsProperties.getTemplateCode())
+                    .setPhoneNumbers(smsDTO.getPhone())
+                    .setTemplateParam("{\"code\":\"" + smsDTO.getCode() + "\"}");
+            RuntimeOptions runtime = new RuntimeOptions();
             client.sendSmsWithOptions(sendSmsRequest, runtime);
-        } catch (Exception ex) {
+        } catch (Exception e) {
             throw new BizException("验证码发送失败");
         }
     }

@@ -328,6 +328,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     .subject("验证码")
                     .template("code.html")
                     .commentMap(map)
+                    .code(code)
                     .build();
             rabbitTemplate.convertAndSend(RabbitMQConstant.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
         } else {

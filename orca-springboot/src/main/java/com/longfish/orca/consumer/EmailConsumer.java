@@ -28,7 +28,7 @@ public class EmailConsumer {
         EmailDTO emailDTO = JSON.parseObject(new String(data), EmailDTO.class);
         log.info("开始发送邮箱验证码TO：{}", emailDTO.getEmail());
         emailUtil.sendHtmlMail(emailDTO);
-        codeUtil.insert(emailDTO.getEmail(), String.valueOf(emailDTO.getCommentMap().get("content")));
+        codeUtil.insert(emailDTO.getEmail(), String.valueOf(emailDTO.getCode()));
     }
 
 }

@@ -21,4 +21,6 @@ public class EmailDTO {
 
     private String template;
 
+    private String code;
+
 }
