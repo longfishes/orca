@@ -1,7 +1,9 @@
 package com.longfish.orca.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.longfish.orca.constant.RabbitMQConstant;
 import com.longfish.orca.context.BaseContext;
 import com.longfish.orca.enums.StatusCodeEnum;
 import com.longfish.orca.exception.BizException;
@@ -14,6 +16,8 @@ import com.longfish.orca.service.IUserService;
 import com.longfish.orca.util.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -314,24 +318,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
 
         String code = codeUtil.getRandomCode();
-        codeUtil.insert(username, code);
 
-//TODO 开启手机 & 邮箱验证码 发送
+        Map<String, Object> map = new HashMap<>();
+        map.put("content", "您的验证码为" + code + "，有效期15分钟，请不要告诉他人哦！");
 
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("content", code);
-//
-//        if (isEmail) {
-//            EmailDTO emailDTO = EmailDTO.builder()
-//                    .email(username)
-//                    .subject("验证码")
-//                    .template("code.html")
-//                    .commentMap(map)
-//                    .build();
-//            rabbitTemplate.convertAndSend(RabbitMQConstant.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
-//        } else {
-//
-//        }
+        if (isEmail) {
+            EmailDTO emailDTO = EmailDTO.builder()
+                    .email(username)
+                    .subject("验证码")
+                    .template("code.html")
+                    .commentMap(map)
+                    .build();
+            rabbitTemplate.convertAndSend(RabbitMQConstant.EMAIL_EXCHANGE, "*", new Message(JSON.toJSONBytes(emailDTO), new MessageProperties()));
+        } else {
+            SmsDTO smsDTO = SmsDTO.builder()
+                    .phone(username)
+                    .code(code)
+                    .build();
+            rabbitTemplate.convertAndSend(RabbitMQConstant.PHONE_EXCHANGE, "*", new Message(JSON.toJSONBytes(smsDTO), new MessageProperties())
+            );
+        }
     }
 
     @Override

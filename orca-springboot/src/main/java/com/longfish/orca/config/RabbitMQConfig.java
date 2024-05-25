@@ -39,7 +39,7 @@ public class RabbitMQConfig {
 
     @Bean
     public Binding bindingPhoneDirect() {
-        return BindingBuilder.bind(emailQueue()).to(emailExchange());
+        return BindingBuilder.bind(phoneQueue()).to(phoneExchange());
     }
 
 }
