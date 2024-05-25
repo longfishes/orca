@@ -30,7 +30,6 @@ public class PhoneUtil {
     private SmsProperties smsProperties;
 
     public void sendMessage(SmsDTO smsDTO) {
-        log.info("{}", smsDTO);
         Config config = new Config()
                 .setAccessKeyId(smsProperties.getAccessKeyId())
                 .setAccessKeySecret(smsProperties.getAccessKeySecret());
