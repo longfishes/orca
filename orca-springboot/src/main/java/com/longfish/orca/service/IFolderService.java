@@ -1,9 +1,11 @@
 package com.longfish.orca.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.longfish.orca.pojo.dto.FolderDTO;
 import com.longfish.orca.pojo.dto.FolderUpdateDTO;
 import com.longfish.orca.pojo.entity.Folder;
-import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -18,4 +20,10 @@ public interface IFolderService extends IService<Folder> {
     void create(FolderDTO folderDTO);
 
     void updateName(FolderUpdateDTO folderUpdateDTO);
+
+    List<Folder> root();
+
+    void deleteById(Long id);
+
+    void deleteBatchIds(List<Long> ids);
 }

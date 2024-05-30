@@ -3,9 +3,19 @@ package com.longfish.orca;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 public class LocalTest {
+
+    @Test
+    public void testSplit() {
+        String s = "/a/b/c";
+        Arrays.stream(s.split("/")).forEach(System.out::println);
+
+        String s2 = "/";
+        Arrays.stream(s2.split("/")).forEach(System.out::println);
+    }
 
     @Test
     @SuppressWarnings("all")

@@ -5,13 +5,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.longfish.orca.constant.DatabaseConstant;
 import com.longfish.orca.context.BaseContext;
+import com.longfish.orca.enums.StatusCodeEnum;
 import com.longfish.orca.exception.BizException;
 import com.longfish.orca.mapper.DocumentMapper;
 import com.longfish.orca.pojo.dto.DocumentDTO;
+import com.longfish.orca.pojo.dto.DocumentUpdateDTO;
 import com.longfish.orca.pojo.dto.PageDTO;
 import com.longfish.orca.pojo.entity.Document;
 import com.longfish.orca.pojo.entity.Folder;
 import com.longfish.orca.pojo.vo.DocumentAbstractVO;
+import com.longfish.orca.pojo.vo.DocumentVO;
 import com.longfish.orca.pojo.vo.PageVO;
 import com.longfish.orca.service.IDocumentService;
 import com.longfish.orca.service.IFolderService;
@@ -132,11 +135,42 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
     }
 
     @Override
-    public Document id(Long id) {
-        return lambdaQuery().eq(Document::getUserId, BaseContext.getCurrentId())
+    public void updateDoc(DocumentUpdateDTO documentUpdateDTO) {
+        Document result = getById(documentUpdateDTO.getId());
+        if (!result.getUserId().equals(BaseContext.getCurrentId()) || result.getIsLocked()) {
+            throw new BizException(StatusCodeEnum.FORBIDDEN);
+        }
+        Document update = BeanUtil.copyProperties(documentUpdateDTO, Document.class);
+
+        if (update.getTitle().equals("")) {
+            update.setTitle(null);
+        }
+        if (update.getCover().equals("")) {
+            update.setCover(null);
+        }
+        if (update.getDocAbstract().equals("")) {
+            update.setDocAbstract(null);
+        }
+        if (update.getContent().equals("")) {
+            update.setContent(null);
+        }
+        if (update.getPath().equals("")) {
+            update.setPath(null);
+        }
+        update.setUpdateTime(LocalDateTime.now());
+        updateById(update);
+    }
+
+    @Override
+    public DocumentVO id(Long id) {
+        Document result = lambdaQuery().eq(Document::getUserId, BaseContext.getCurrentId())
                 .eq(Document::getId, id)
                 .eq(Document::getIsLocked, 0)
                 .one();
+        if (result == null) {
+            throw new BizException(StatusCodeEnum.FORBIDDEN);
+        }
+        return BeanUtil.copyProperties(result, DocumentVO.class);
     }
 
     @Override

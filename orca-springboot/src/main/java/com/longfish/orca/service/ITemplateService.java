@@ -1,7 +1,10 @@
 package com.longfish.orca.service;
 
-import com.longfish.orca.pojo.entity.Template;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.longfish.orca.pojo.entity.Template;
+import com.longfish.orca.pojo.vo.TemplateAbstractVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITemplateService extends IService<Template> {
 
+    List<TemplateAbstractVO> getPublic();
 }

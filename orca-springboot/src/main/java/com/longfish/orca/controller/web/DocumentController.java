@@ -3,9 +3,10 @@ package com.longfish.orca.controller.web;
 
 import com.longfish.orca.pojo.Result;
 import com.longfish.orca.pojo.dto.DocumentDTO;
+import com.longfish.orca.pojo.dto.DocumentUpdateDTO;
 import com.longfish.orca.pojo.dto.PageDTO;
-import com.longfish.orca.pojo.entity.Document;
 import com.longfish.orca.pojo.vo.DocumentAbstractVO;
+import com.longfish.orca.pojo.vo.DocumentVO;
 import com.longfish.orca.pojo.vo.PageVO;
 import com.longfish.orca.service.IDocumentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -64,7 +65,7 @@ public class DocumentController {
 
     @Operation(summary = "根据id获取文档详情")
     @GetMapping("/{id}")
-    public Result<Document> getById(@PathVariable Long id) {
+    public Result<DocumentVO> getById(@PathVariable Long id) {
         return Result.success(documentService.id(id));
     }
 
@@ -107,6 +108,13 @@ public class DocumentController {
     @DeleteMapping("/delete/batch/{ids}")
     public Result<?> deleteByIdBatchTruly(@PathVariable List<Long> ids) {
         documentService.deleteByIdBatchTruly(ids);
+        return Result.success();
+    }
+
+    @Operation(summary = "条件修改文档")
+    @PutMapping("/update")
+    public Result<?> lambdaUpdate(@RequestBody DocumentUpdateDTO documentUpdateDTO) {
+        documentService.updateDoc(documentUpdateDTO);
         return Result.success();
     }
 }

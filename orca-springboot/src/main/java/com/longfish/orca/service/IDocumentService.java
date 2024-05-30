@@ -2,9 +2,11 @@ package com.longfish.orca.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.longfish.orca.pojo.dto.DocumentDTO;
+import com.longfish.orca.pojo.dto.DocumentUpdateDTO;
 import com.longfish.orca.pojo.dto.PageDTO;
 import com.longfish.orca.pojo.entity.Document;
 import com.longfish.orca.pojo.vo.DocumentAbstractVO;
+import com.longfish.orca.pojo.vo.DocumentVO;
 import com.longfish.orca.pojo.vo.PageVO;
 
 import java.util.List;
@@ -27,7 +29,7 @@ public interface IDocumentService extends IService<Document> {
 
     List<DocumentAbstractVO> trash();
 
-    Document id(Long id);
+    DocumentVO id(Long id);
 
     void deleteById(Long id);
 
@@ -42,4 +44,6 @@ public interface IDocumentService extends IService<Document> {
     void restoreBatch(List<Long> ids);
 
     List<DocumentAbstractVO> path(String path);
+
+    void updateDoc(DocumentUpdateDTO documentUpdateDTO);
 }
