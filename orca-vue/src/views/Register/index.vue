@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { codeAPI, lambdaRegisterAPI } from '@/api/user'
+import { codeAPI, lambdaRegisterAPI, uniqueCheckAPI } from '@/api/user'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 const router = useRouter()
@@ -26,6 +26,11 @@ const checkPhone = (rule, value, callback) => {
     callback(new Error('请输入正确的手机/邮箱格式'))
   }
 }
+// 用户名唯一性校验
+const onlyUsername = async (value, callback) => {
+  const res =await uniqueCheckAPI(formModel.value.username)
+  
+}
 const rules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },
@@ -34,7 +39,8 @@ const rules = {
       pattern: /^(?!\d+$)[a-zA-Z0-9_]{2,49}$/,
       message: '用户名由2-49位大小写字母和下划线组成，且不能为纯数字',
       trigger: 'blur'
-    }
+    },
+    { validator: onlyUsername, trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },

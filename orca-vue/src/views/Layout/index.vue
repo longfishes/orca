@@ -1,5 +1,5 @@
 <template>
-  <div>首页架子</div>
+  <div>我是架子</div>
 </template>
 
 <script setup></script>

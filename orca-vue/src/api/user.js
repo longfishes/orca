@@ -40,3 +40,13 @@ export const codeAPI = (username) => {
     }
   })
 }
+// 用户名唯一性校验
+
+export const uniqueCheckAPI = (username) => {
+  return request({
+    url: '/user/uniqueCheck',
+    params: {
+      username
+    }
+  })
+}

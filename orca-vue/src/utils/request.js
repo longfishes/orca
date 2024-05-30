@@ -28,8 +28,9 @@ instance.interceptors.response.use(
       return res
     }
     ElMessage({ message: res.data.msg || '服务异常', type: 'error' })
-
-    return Promise.reject(res.data)
+    if (res.data.code === 40005) {
+      return Promise.reject(res.data.msg)
+    } else return Promise.reject(res.data)
   },
   (err) => {
     const userStore = useUserStore()
