@@ -215,9 +215,7 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
                 .eq(Document::getIsLocked, 0)
                 .in(Document::getId, ids)
                 .list();
-        List<Long> remove = new ArrayList<>();
-        result.forEach(r -> remove.add(r.getId()));
-        removeByIds(remove);
+        removeBatchByIds(result);
     }
 
     @Override

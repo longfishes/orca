@@ -47,5 +47,4 @@ public class Template implements Serializable {
 
     private LocalDateTime updateTime;
 
-
 }

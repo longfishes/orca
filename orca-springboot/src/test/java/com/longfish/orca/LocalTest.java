@@ -1,5 +1,8 @@
 package com.longfish.orca;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.longfish.orca.pojo.dto.TemplateDTO;
+import com.longfish.orca.pojo.entity.Template;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -7,6 +10,18 @@ import java.util.Arrays;
 import java.util.List;
 
 public class LocalTest {
+
+    @Test
+    public void testCopy() {
+        Template temp = new Template();
+        temp.setUserId(1L);
+        temp.setCover("first");
+
+        TemplateDTO dto = TemplateDTO.builder().title("first").cover("2").build();
+        BeanUtil.copyProperties(temp, dto);
+        System.out.println(temp);
+        System.out.println(dto);
+    }
 
     @Test
     public void testSplit() {
