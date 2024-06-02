@@ -76,7 +76,7 @@ public class TemplateController {
     }
 
     @Operation(summary = "批量删除模板")
-    @DeleteMapping("/{ids}")
+    @DeleteMapping("/batch/{ids}")
     public Result<?> delete(@PathVariable List<Long> ids) {
         templateService.deleteBatchIds(ids);
         return Result.success();

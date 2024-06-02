@@ -1,11 +1,14 @@
 package com.longfish.orca.controller.web;
 
 
+import com.longfish.orca.context.SearchStrategyContext;
 import com.longfish.orca.pojo.Result;
+import com.longfish.orca.pojo.dto.DocumentByTempDTO;
 import com.longfish.orca.pojo.dto.DocumentDTO;
 import com.longfish.orca.pojo.dto.DocumentUpdateDTO;
 import com.longfish.orca.pojo.dto.PageDTO;
 import com.longfish.orca.pojo.vo.DocumentAbstractVO;
+import com.longfish.orca.pojo.vo.DocumentSearchVO;
 import com.longfish.orca.pojo.vo.DocumentVO;
 import com.longfish.orca.pojo.vo.PageVO;
 import com.longfish.orca.service.IDocumentService;
@@ -32,11 +35,27 @@ public class DocumentController {
     @Autowired
     private IDocumentService documentService;
 
+    @Autowired
+    private SearchStrategyContext searchStrategyContext;
+
     @Operation(summary = "创建新文档")
     @PostMapping("/create")
     public Result<?> create(@RequestBody DocumentDTO documentDTO) {
         documentService.create(documentDTO);
         return Result.success();
+    }
+
+    @Operation(summary = "根据模板创建新文档")
+    @PostMapping("/createByTemp")
+    public Result<?> createByTemp(@RequestBody DocumentByTempDTO documentByTempDTO) {
+        documentService.createByTemp(documentByTempDTO);
+        return Result.success();
+    }
+
+    @Operation(summary = "搜索文档")
+    @GetMapping("/search")
+    public Result<List<DocumentSearchVO>> search(String keywords) {
+        return Result.success(searchStrategyContext.executeSearchStrategy(keywords));
     }
 
     @Operation(summary = "分页条件查询")

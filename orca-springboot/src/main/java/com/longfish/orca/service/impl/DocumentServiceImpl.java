@@ -8,16 +8,19 @@ import com.longfish.orca.context.BaseContext;
 import com.longfish.orca.enums.StatusCodeEnum;
 import com.longfish.orca.exception.BizException;
 import com.longfish.orca.mapper.DocumentMapper;
+import com.longfish.orca.pojo.dto.DocumentByTempDTO;
 import com.longfish.orca.pojo.dto.DocumentDTO;
 import com.longfish.orca.pojo.dto.DocumentUpdateDTO;
 import com.longfish.orca.pojo.dto.PageDTO;
 import com.longfish.orca.pojo.entity.Document;
 import com.longfish.orca.pojo.entity.Folder;
+import com.longfish.orca.pojo.entity.Template;
 import com.longfish.orca.pojo.vo.DocumentAbstractVO;
 import com.longfish.orca.pojo.vo.DocumentVO;
 import com.longfish.orca.pojo.vo.PageVO;
 import com.longfish.orca.service.IDocumentService;
 import com.longfish.orca.service.IFolderService;
+import com.longfish.orca.service.ITemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,9 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
     @Autowired
     private IFolderService folderService;
 
+    @Autowired
+    private ITemplateService templateService;
+
     @Transactional
     @Override
     public void create(DocumentDTO documentDTO) {
@@ -60,6 +66,17 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
                     .updateTime(LocalDateTime.now())
                     .build());
         }
+    }
+
+    @Override
+    public void createByTemp(DocumentByTempDTO documentByTempDTO) {
+        Template result = templateService.getById(documentByTempDTO.getTempId());
+        if (result == null || !result.getUserId().equals(BaseContext.getCurrentId())) {
+            throw new BizException(StatusCodeEnum.FORBIDDEN);
+        }
+        DocumentDTO create = BeanUtil.copyProperties(result, DocumentDTO.class);
+        create.setPath(documentByTempDTO.getPath());
+        create(create);
     }
 
     @Override

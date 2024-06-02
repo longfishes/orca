@@ -1,6 +1,7 @@
 package com.longfish.orca.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.longfish.orca.pojo.dto.DocumentByTempDTO;
 import com.longfish.orca.pojo.dto.DocumentDTO;
 import com.longfish.orca.pojo.dto.DocumentUpdateDTO;
 import com.longfish.orca.pojo.dto.PageDTO;
@@ -46,4 +47,6 @@ public interface IDocumentService extends IService<Document> {
     List<DocumentAbstractVO> path(String path);
 
     void updateDoc(DocumentUpdateDTO documentUpdateDTO);
+
+    void createByTemp(DocumentByTempDTO documentByTempDTO);
 }
