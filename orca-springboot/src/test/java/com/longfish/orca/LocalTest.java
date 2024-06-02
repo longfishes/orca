@@ -12,6 +12,15 @@ import java.util.List;
 public class LocalTest {
 
     @Test
+    public void testSubString() {
+        try {
+            System.out.println("111".substring(0, 31));
+        } catch (StringIndexOutOfBoundsException e) {
+            System.out.println("越界");
+        }
+    }
+
+    @Test
     public void testCopy() {
         Template temp = new Template();
         temp.setUserId(1L);

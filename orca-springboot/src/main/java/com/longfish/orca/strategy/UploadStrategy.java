@@ -1,4 +1,4 @@
-package com.longfish.orca.stategy;
+package com.longfish.orca.strategy;
 
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,4 +1,4 @@
-package com.longfish.orca.stategy.impl;
+package com.longfish.orca.strategy.impl;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;

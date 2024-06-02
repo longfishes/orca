@@ -1,4 +1,4 @@
-package com.longfish.orca.stategy;
+package com.longfish.orca.strategy;
 
 import com.longfish.orca.pojo.vo.DocumentSearchVO;
 
@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface SearchStrategy {
 
-    List<DocumentSearchVO> searchArticle(String keywords);
+    List<DocumentSearchVO> searchDocument(String keywords);
 
 }

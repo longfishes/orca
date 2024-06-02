@@ -1,6 +1,6 @@
 package com.longfish.orca.context;
 
-import com.longfish.orca.stategy.UploadStrategy;
+import com.longfish.orca.strategy.UploadStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

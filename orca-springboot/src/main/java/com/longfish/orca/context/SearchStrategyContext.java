@@ -1,7 +1,7 @@
 package com.longfish.orca.context;
 
 import com.longfish.orca.pojo.vo.DocumentSearchVO;
-import com.longfish.orca.stategy.SearchStrategy;
+import com.longfish.orca.strategy.SearchStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class SearchStrategyContext {
     private Map<String, SearchStrategy> searchStrategyMap;
 
     public List<DocumentSearchVO> executeSearchStrategy(String keywords) {
-        return searchStrategyMap.get(getStrategy(searchMode)).searchArticle(keywords);
+        return searchStrategyMap.get(getStrategy(searchMode)).searchDocument(keywords);
     }
 
 }

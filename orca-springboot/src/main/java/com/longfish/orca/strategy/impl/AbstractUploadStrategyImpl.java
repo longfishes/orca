@@ -1,7 +1,7 @@
-package com.longfish.orca.stategy.impl;
+package com.longfish.orca.strategy.impl;
 
 import com.longfish.orca.exception.BizException;
-import com.longfish.orca.stategy.UploadStrategy;
+import com.longfish.orca.strategy.UploadStrategy;
 import com.longfish.orca.util.FileUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

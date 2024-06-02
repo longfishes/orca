@@ -1,4 +1,4 @@
-package com.longfish.orca.stategy.impl;
+package com.longfish.orca.strategy.impl;
 
 import com.longfish.orca.properties.MinioProperties;
 import io.minio.MinioClient;

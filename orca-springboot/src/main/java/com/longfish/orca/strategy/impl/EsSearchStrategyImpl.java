@@ -1,7 +1,7 @@
-package com.longfish.orca.stategy.impl;
+package com.longfish.orca.strategy.impl;
 
 import com.longfish.orca.pojo.vo.DocumentSearchVO;
-import com.longfish.orca.stategy.SearchStrategy;
+import com.longfish.orca.strategy.SearchStrategy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
 public class EsSearchStrategyImpl implements SearchStrategy {
 
     @Override
-    public List<DocumentSearchVO> searchArticle(String keywords) {
+    public List<DocumentSearchVO> searchDocument(String keywords) {
         return null;
     }
 }
