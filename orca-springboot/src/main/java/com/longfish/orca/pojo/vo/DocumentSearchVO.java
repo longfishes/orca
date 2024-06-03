@@ -15,7 +15,5 @@ public class DocumentSearchVO {
 
     private String title;
 
-    private String docAbstract;
-
     private String content;
 }

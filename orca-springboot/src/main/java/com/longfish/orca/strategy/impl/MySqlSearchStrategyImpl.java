@@ -6,14 +6,15 @@ import com.longfish.orca.context.BaseContext;
 import com.longfish.orca.mapper.DocumentMapper;
 import com.longfish.orca.pojo.entity.Document;
 import com.longfish.orca.pojo.vo.DocumentSearchVO;
+import com.longfish.orca.properties.SearchDisplayLengthProperties;
 import com.longfish.orca.strategy.SearchStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.longfish.orca.constant.CommonConstant.POST_TAG;
 import static com.longfish.orca.constant.CommonConstant.PRE_TAG;
@@ -24,9 +25,11 @@ public class MySqlSearchStrategyImpl implements SearchStrategy {
     @Autowired
     private DocumentMapper documentMapper;
 
+    @Autowired
+    private SearchDisplayLengthProperties lengthProperties;
+
     private String tempKeywords;
 
-    //TODO 改进搜索策略 -> 根据 index 标记 \ 提取展示文本长度变量
     @Override
     public List<DocumentSearchVO> searchDocument(String keywords) {
         if (StringUtils.isBlank(keywords)) {
@@ -38,85 +41,57 @@ public class MySqlSearchStrategyImpl implements SearchStrategy {
                 .eq(Document::getUserId, BaseContext.getCurrentId())
                 .and(i -> i.like(Document::getTitle, this.tempKeywords)
                         .or()
-                        .like(Document::getContent, this.tempKeywords)
-                        .or()
-                        .like(Document::getDocAbstract, this.tempKeywords)));
-        return documents.stream().map(item -> {
-            item.setContent(markdownToPlainText(item.getContent()));
-            boolean isLowerCase = true;
-            String content;
-            int contentIndex = item.getContent().indexOf(this.tempKeywords.toLowerCase());
-            if (contentIndex == -1) {
-                contentIndex = item.getContent().indexOf(this.tempKeywords.toUpperCase());
-                if (contentIndex != -1) {
-                    isLowerCase = false;
-                }
-            }
-            if (contentIndex != -1) {
-                int preIndex = contentIndex > 15 ? contentIndex - 15 : 0;
-                String preText = item.getContent().substring(preIndex, contentIndex);
-                int last = contentIndex + this.tempKeywords.length();
-                int postLength = item.getContent().length() - last;
-                int postIndex = postLength > 35 ? last + 35 : last + postLength;
-                String postText = item.getContent().substring(contentIndex, postIndex);
-                if (isLowerCase) {
-                    content = (preText + postText).replaceAll(this.tempKeywords.toLowerCase(), PRE_TAG + this.tempKeywords.toLowerCase() + POST_TAG);
-                } else {
-                    content = (preText + postText).replaceAll(this.tempKeywords.toUpperCase(), PRE_TAG + this.tempKeywords.toUpperCase() + POST_TAG);
-                }
-            } else {
-                if (item.getContent().length() > 30) {
-                    content = item.getContent().substring(0, 31);
-                } else content = item.getContent();
-            }
-            isLowerCase = true;
-            String docAbstract;
-            int abstractIndex = item.getDocAbstract().indexOf(this.tempKeywords.toLowerCase());
-            if (abstractIndex == -1) {
-                abstractIndex = item.getDocAbstract().indexOf(this.tempKeywords.toUpperCase());
-                if (abstractIndex != -1) {
-                    isLowerCase = false;
-                }
-            }
-            if (abstractIndex != -1) {
-                int preIndex = abstractIndex > 15 ? abstractIndex - 15 : 0;
-                String preText = item.getDocAbstract().substring(preIndex, abstractIndex);
-                int last = abstractIndex + this.tempKeywords.length();
-                int postLength = item.getDocAbstract().length() - last;
-                int postIndex = postLength > 35 ? last + 35 : last + postLength;
-                String postText = item.getDocAbstract().substring(abstractIndex, postIndex);
-                if (isLowerCase) {
-                    docAbstract = (preText + postText).replaceAll(this.tempKeywords.toLowerCase(), PRE_TAG + this.tempKeywords.toLowerCase() + POST_TAG);
-                } else {
-                    docAbstract = (preText + postText).replaceAll(this.tempKeywords.toUpperCase(), PRE_TAG + this.tempKeywords.toUpperCase() + POST_TAG);
-                }
-            } else {
-                if (item.getDocAbstract().length() > 30) {
-                    docAbstract = item.getDocAbstract().substring(0, 31);
-                } else docAbstract = item.getDocAbstract();
+                        .like(Document::getContent, this.tempKeywords)));
+        List<DocumentSearchVO> ret = new ArrayList<>();
+        documents.forEach(item -> {
+            String docTitle = item.getTitle();
+            String content = markdownToPlainText(item.getContent());
 
+            List<Integer> titleIndexes = findIndexes(docTitle, this.tempKeywords);
+            List<Integer> contentIndexes = findIndexes(content, this.tempKeywords);
+
+            contentIndexes.forEach(i -> {
+                int preIndex = Math.max(i - lengthProperties.getPreLength(), 0);
+                int postIndex = Math.min(i + this.tempKeywords.length() + lengthProperties.getPostLength(), content.length());
+                String voContent = new StringBuilder(content.substring(preIndex, postIndex))
+                        .insert(i - preIndex + this.tempKeywords.length(), POST_TAG)
+                        .insert(i - preIndex, PRE_TAG).toString();
+                ret.add(DocumentSearchVO.builder()
+                        .id(item.getId())
+                        .title(highlightKeywords(docTitle, this.tempKeywords))
+                        .content(voContent)
+                        .build());
+            });
+            if (contentIndexes.size() == 0 && titleIndexes.size() != 0) {
+                ret.add(DocumentSearchVO.builder()
+                        .id(item.getId())
+                        .title(highlightKeywords(docTitle, this.tempKeywords))
+                        .content(content.substring(0,
+                                Math.min(lengthProperties.getPreLength() + lengthProperties.getPostLength(), content.length())))
+                        .build());
             }
-            isLowerCase = true;
-            int titleIndex = item.getTitle().indexOf(this.tempKeywords.toLowerCase());
-            if (titleIndex == -1) {
-                titleIndex = item.getTitle().indexOf(this.tempKeywords.toUpperCase());
-                if (titleIndex != -1) {
-                    isLowerCase = false;
-                }
-            }
-            String docTitle;
-            if (isLowerCase) {
-                docTitle = item.getTitle().replaceAll(this.tempKeywords.toLowerCase(), PRE_TAG + this.tempKeywords.toLowerCase() + POST_TAG);
-            } else {
-                docTitle = item.getTitle().replaceAll(this.tempKeywords.toUpperCase(), PRE_TAG + this.tempKeywords.toUpperCase() + POST_TAG);
-            }
-            return DocumentSearchVO.builder()
-                    .id(item.getId())
-                    .title(docTitle)
-                    .content(content)
-                    .docAbstract(docAbstract)
-                    .build();
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        });
+        return ret;
+    }
+
+    private List<Integer> findIndexes(String text, String keyword) {
+        List<Integer> indexes = new ArrayList<>();
+        if (StringUtils.isBlank(text) || StringUtils.isBlank(keyword)) {
+            return indexes;
+        }
+        Matcher matcher = Pattern.compile("(?i)(" + Pattern.quote(keyword) + ")").matcher(text);
+        while (matcher.find()) {
+            indexes.add(matcher.start());
+        }
+        return indexes;
+    }
+
+    private String highlightKeywords(String text, String keyword) {
+        if (StringUtils.isBlank(text) || StringUtils.isBlank(keyword)) {
+            return text;
+        }
+        String regex = "(?i)(" + Pattern.quote(keyword) + ")";
+        return text.replaceAll(regex, PRE_TAG + "$1" + POST_TAG);
     }
 
     private String markdownToPlainText(String input) {

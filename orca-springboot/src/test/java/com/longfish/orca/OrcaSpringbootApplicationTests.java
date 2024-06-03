@@ -70,6 +70,9 @@ class OrcaSpringbootApplicationTests {
     @Autowired
     private PageProperties pageProperties;
 
+    @Autowired
+    private SearchDisplayLengthProperties searchDisplayLengthProperties;
+
     @Test
     public void testLogicDelete() {
         List<Document> updateList = new ArrayList<>();
@@ -147,6 +150,7 @@ class OrcaSpringbootApplicationTests {
         System.out.println(localProperties);
         System.out.println(mobileProperties);
         System.out.println(pageProperties);
+        System.out.println(searchDisplayLengthProperties);
     }
 
     @Test
