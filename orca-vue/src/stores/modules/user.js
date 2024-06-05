@@ -12,7 +12,7 @@ export const useUserStore = defineStore(
     const LoginLam = async (data) => {
       const res = await lambdaLoginAPI(data)
       userInfo.value = res.data.data
-      
+
       console.log(userInfo.value)
     }
     // 验证码登录
