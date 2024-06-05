@@ -18,6 +18,12 @@ import static com.longfish.orca.constant.CommonConstant.PRE_TAG;
 public class LocalTest {
 
     @Test
+    public void testSp() {
+        String[] res = "/ff".split("/");
+        System.out.println(Arrays.toString(res));
+    }
+
+    @Test
     public void testSearchStrategyImplCore() {
         String content = "--------------------------------------------------------0XX00XX00XX---------------------------------------------------------";
         String keywords = "XX";

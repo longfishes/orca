@@ -1,6 +1,7 @@
 package com.longfish.orca.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.longfish.orca.constant.DatabaseConstant;
@@ -52,7 +53,7 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
     @Override
     public void create(DocumentDTO documentDTO) {
         Long currentId = BaseContext.getCurrentId();
-        if (documentDTO.getPath() == null || documentDTO.getPath().equals("")) documentDTO.setPath("/");
+        if (StringUtils.isBlank(documentDTO.getPath())) documentDTO.setPath("/");
         Document save = BeanUtil.copyProperties(documentDTO, Document.class);
         save.setUserId(currentId);
         save.setCreateTime(LocalDateTime.now());
@@ -122,7 +123,6 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
         List<Document> result = lambdaQuery().eq(Document::getUserId, BaseContext.getCurrentId())
                 .eq(Document::getIsDeleted, 1)
                 .eq(Document::getIsLocked, 0)
-                .eq(Document::getIsTop, 0)
                 .orderBy(true, false, Document::getUpdateTime)
                 .list();
         List<DocumentAbstractVO> returnList = new ArrayList<>();
@@ -137,9 +137,8 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
     public List<DocumentAbstractVO> path(String path) {
         if (path == null || path.equals("")) path = "/";
         List<Document> result = lambdaQuery().eq(Document::getUserId, BaseContext.getCurrentId())
-                .eq(Document::getIsDeleted, 1)
+                .eq(Document::getIsDeleted, 0)
                 .eq(Document::getIsLocked, 0)
-                .eq(Document::getIsTop, 0)
                 .eq(Document::getPath, path)
                 .orderBy(true, false, Document::getUpdateTime)
                 .list();

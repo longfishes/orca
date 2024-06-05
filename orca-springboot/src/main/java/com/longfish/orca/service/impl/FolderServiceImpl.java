@@ -1,5 +1,6 @@
 package com.longfish.orca.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.longfish.orca.context.BaseContext;
 import com.longfish.orca.enums.StatusCodeEnum;
 import com.longfish.orca.exception.BizException;
@@ -27,10 +28,10 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
 
     @Override
     public List<Folder> root() {
-        return lambdaQuery()
+        List<Folder> folders = lambdaQuery()
                 .eq(Folder::getUserId, BaseContext.getCurrentId())
-                .eq(Folder::getPath, "/")
                 .list();
+        return folders.stream().map(f -> f.getPath().split("/").length <= 2 ? f : null).toList();
     }
 
     @Override
@@ -60,8 +61,12 @@ public class FolderServiceImpl extends ServiceImpl<FolderMapper, Folder> impleme
     @Override
     public void create(FolderDTO folderDTO) {
         String path = folderDTO.getPath();
-        while (path.charAt(path.length() - 1) == '/') {
-            path = path.substring(0, path.length() - 1);
+        if (StringUtils.isBlank(path)) {
+            path = "/";
+        } else {
+            while (path.charAt(path.length() - 1) == '/') {
+                path = path.substring(0, path.length() - 1);
+            }
         }
         save(Folder.builder()
                 .userId(BaseContext.getCurrentId())
