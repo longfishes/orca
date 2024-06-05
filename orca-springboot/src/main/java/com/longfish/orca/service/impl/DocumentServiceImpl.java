@@ -9,18 +9,21 @@ import com.longfish.orca.context.BaseContext;
 import com.longfish.orca.enums.StatusCodeEnum;
 import com.longfish.orca.exception.BizException;
 import com.longfish.orca.mapper.DocumentMapper;
+import com.longfish.orca.mapper.HistoryMapper;
 import com.longfish.orca.pojo.dto.DocumentByTempDTO;
 import com.longfish.orca.pojo.dto.DocumentDTO;
 import com.longfish.orca.pojo.dto.DocumentUpdateDTO;
 import com.longfish.orca.pojo.dto.PageDTO;
 import com.longfish.orca.pojo.entity.Document;
 import com.longfish.orca.pojo.entity.Folder;
+import com.longfish.orca.pojo.entity.History;
 import com.longfish.orca.pojo.entity.Template;
 import com.longfish.orca.pojo.vo.DocumentAbstractVO;
 import com.longfish.orca.pojo.vo.DocumentVO;
 import com.longfish.orca.pojo.vo.PageVO;
 import com.longfish.orca.service.IDocumentService;
 import com.longfish.orca.service.IFolderService;
+import com.longfish.orca.service.IHistoryService;
 import com.longfish.orca.service.ITemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,12 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
 
     @Autowired
     private ITemplateService templateService;
+
+    @Autowired
+    private IHistoryService historyService;
+
+    @Autowired
+    private HistoryMapper historyMapper;
 
     @Transactional
     @Override
@@ -78,6 +87,19 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
         DocumentDTO create = BeanUtil.copyProperties(result, DocumentDTO.class);
         create.setPath(documentByTempDTO.getPath());
         create(create);
+    }
+
+    @Override
+    public List<DocumentAbstractVO> recent(Long limit) {
+        if (limit == null || limit <= 0) limit = 1000L;
+        List<History> histories = historyMapper.recent(limit);
+        if (histories == null) {
+            return new ArrayList<>();
+        }
+        List<Long> docIds = histories.stream().map(History::getDocId).toList();
+        List<DocumentAbstractVO> resultList = new ArrayList<>();
+        docIds.forEach(i -> resultList.add(BeanUtil.copyProperties(getById(i), DocumentAbstractVO.class)));
+        return resultList;
     }
 
     @Override
@@ -179,14 +201,34 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
 
     @Override
     public DocumentVO id(Long id) {
-        Document result = lambdaQuery().eq(Document::getUserId, BaseContext.getCurrentId())
+        Long currentId = BaseContext.getCurrentId();
+        Document result = lambdaQuery()
                 .eq(Document::getId, id)
                 .eq(Document::getIsLocked, 0)
+                .eq(Document::getUserId, currentId)
                 .one();
-        if (result == null) {
-            throw new BizException(StatusCodeEnum.FORBIDDEN);
+        if (result != null) {
+            historyService.save(History.builder()
+                    .userId(currentId)
+                    .docId(result.getId())
+                    .createTime(LocalDateTime.now())
+                    .build());
+            return BeanUtil.copyProperties(result, DocumentVO.class).setEditable(true);
         }
-        return BeanUtil.copyProperties(result, DocumentVO.class);
+        Document result2 = lambdaQuery()
+                .eq(Document::getId, id)
+                .eq(Document::getIsLocked, 0)
+                .eq(Document::getStatus, 1)
+                .one();
+        if (result2 != null) {
+            historyService.save(History.builder()
+                    .userId(currentId)
+                    .docId(result2.getId())
+                    .createTime(LocalDateTime.now())
+                    .build());
+            return BeanUtil.copyProperties(result2, DocumentVO.class).setEditable(false);
+        }
+        throw new BizException(StatusCodeEnum.FORBIDDEN);
     }
 
     @Override

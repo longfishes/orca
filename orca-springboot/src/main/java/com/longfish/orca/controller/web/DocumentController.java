@@ -58,6 +58,12 @@ public class DocumentController {
         return Result.success(searchStrategyContext.executeSearchStrategy(keywords));
     }
 
+    @Operation(summary = "获取最近文档摘要")
+    @GetMapping("/recent")
+    public Result<List<DocumentAbstractVO>> recent(Long limit) {
+        return Result.success(documentService.recent(limit));
+    }
+
     @Operation(summary = "分页条件查询")
     @PostMapping("/list")
     public Result<PageVO<DocumentAbstractVO>> list(@RequestBody PageDTO pageDTO) {

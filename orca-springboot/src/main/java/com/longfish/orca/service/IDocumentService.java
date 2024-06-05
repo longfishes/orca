@@ -49,4 +49,6 @@ public interface IDocumentService extends IService<Document> {
     void updateDoc(DocumentUpdateDTO documentUpdateDTO);
 
     void createByTemp(DocumentByTempDTO documentByTempDTO);
+
+    List<DocumentAbstractVO> recent(Long limit);
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.time.LocalDateTime;
 
@@ -14,9 +15,12 @@ import static com.longfish.orca.constant.CommonConstant.PATTERN;
 @AllArgsConstructor
 @Data
 @Builder
+@Accessors(chain = true)
 public class DocumentVO {
 
     private Long id;
+
+    private Boolean editable;
 
     private String title;
 
