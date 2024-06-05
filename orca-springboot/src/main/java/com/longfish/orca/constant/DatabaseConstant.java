@@ -12,4 +12,6 @@ public interface DatabaseConstant {
 
     String STATUS = "status";
 
+    String AI_SESSION = "ai_session";
+
 }

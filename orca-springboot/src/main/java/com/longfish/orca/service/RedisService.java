@@ -19,6 +19,10 @@ public interface RedisService {
 
     Object get(String key);
 
+    Set<String> keys();
+
+    Set<String> keys(String prefix);
+
     Boolean del(String key);
 
     Long del(List<String> keys);

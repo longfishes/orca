@@ -8,6 +8,7 @@ import com.longfish.orca.pojo.entity.User;
 import com.longfish.orca.properties.*;
 import com.longfish.orca.service.IDocumentService;
 import com.longfish.orca.service.IUserService;
+import com.longfish.orca.service.RedisService;
 import com.longfish.orca.util.AESEncryptUtil;
 import com.longfish.orca.util.CodeUtil;
 import com.longfish.orca.util.IpUtil;
@@ -23,10 +24,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
+import static com.longfish.orca.constant.DatabaseConstant.AI_SESSION;
 
 @SpringBootTest
 class OrcaSpringbootApplicationTests {
@@ -73,8 +73,20 @@ class OrcaSpringbootApplicationTests {
     @Autowired
     private SearchDisplayLengthProperties searchDisplayLengthProperties;
 
+    @Autowired
+    private RedisService redisService;
+
     @Test
-    public void testLogicDelete() {
+    void testRedisGetTopic() {
+        Set<String> keys = redisService.keys(AI_SESSION + ":5");
+        keys.forEach(k -> {
+            String[] split = k.split(":");
+            System.out.println(split[split.length - 1]);
+        });
+    }
+
+    @Test
+    void testLogicDelete() {
         List<Document> updateList = new ArrayList<>();
         List<Document> result = documentService.lambdaQuery()
                 .eq(Document::getUserId, 5)
@@ -87,7 +99,7 @@ class OrcaSpringbootApplicationTests {
 
     @Test
     @SuppressWarnings("all")
-    public void testPage() throws NoSuchMethodException {
+    void testPage() throws NoSuchMethodException {
         Page<Document> page = Page.of(1L, 1000L);
         String s = null;
         documentService.query().orderBy(s != null, false, s).page(page);
@@ -96,7 +108,7 @@ class OrcaSpringbootApplicationTests {
     }
 
     @Test
-    public void testAES() {
+    void testAES() {
         String encrypt = aesEncryptUtil.encrypt("sb");
         System.out.println(aesEncryptUtil.decrypt(encrypt));
     }

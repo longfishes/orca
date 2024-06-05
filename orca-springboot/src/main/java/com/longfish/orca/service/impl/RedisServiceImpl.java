@@ -45,6 +45,16 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public Set<String> keys(String prefix) {
+        return redisTemplate.keys(prefix + ":*");
+    }
+
+    @Override
+    public Set<String> keys() {
+        return redisTemplate.keys("*");
+    }
+
+    @Override
     public Boolean del(String key) {
         return redisTemplate.delete(key);
     }

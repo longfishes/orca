@@ -14,6 +14,8 @@ public interface CommonConstant {
 
     String APPLICATION_JSON = "application/json;charset=utf-8";
 
+    String TEXT_STREAM = "text/event-stream";
+
     String USERNAME_CHECK_REGEX = "^(?!\\d+$)[a-zA-Z0-9_]{2,49}$";
 
     String PRE_TAG = "<mark>";
