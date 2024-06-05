@@ -89,11 +89,33 @@
               style="width: 36px; height: 36px"
             />
           </el-button>
-          <el-button>
+          <el-dropdown  @command="handleCommand">
             <el-avatar
               src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+              class="headshot"
             />
-          </el-button>
+            <template #dropdown>
+              <el-dropdown-menu class="flexpf" style="width: 307px;align-items: center;">
+                <div class="top">
+                  <el-avatar
+                    src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+                  />
+                </div>
+                <el-dropdown-item
+                  style="width: 247px; height: 42px; justify-content: center"
+                  command="change"
+                >
+                  切换账号
+                </el-dropdown-item>
+                <el-dropdown-item
+                  style="width: 247px; height: 42px; justify-content: center"
+                  command="logout"
+                >
+                  退出登录
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </el-header>
       <el-main>
@@ -114,6 +136,7 @@
               style="width: 24px; height: 24px"
             />
           </div>
+
           <div class="import nav-sub flex">
             <img
               src="@/assets/icons/import.png"
@@ -167,6 +190,21 @@ import {
   Opportunity
 } from '@element-plus/icons-vue'
 // import { ref } from 'vue'
+import { useRouter } from 'vue-router';
+const router = useRouter()
+const handleCommand = async (key) => {
+  
+  if (key === 'logout') {
+    await ElMessageBox.confirm('你确认要退出吗?', '温馨提示', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    router.push('/login')
+  } else {
+    router.push(`/user/${key}`)
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -234,6 +272,14 @@ import {
         border: 0;
         width: 36px;
         height: 36px;
+      }
+      .el-dropdown {
+        .headshot {
+          &:active,
+          &:focus {
+            outline: none;
+          }
+        }
       }
     }
     .el-main {
