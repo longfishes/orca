@@ -209,7 +209,7 @@ public class DocumentController {
             in = ParameterIn.HEADER,
             description = WEB_HEADER_ADVICE,
             example = WEB_HEADER_VAR)})
-    @PostMapping("/avatar/upload")
+    @PostMapping("/img/upload")
     public Result<UrlVO> uploadAvatar(@Parameter(schema = @Schema(
             requiredMode = Schema.RequiredMode.REQUIRED,
             type = "file",
