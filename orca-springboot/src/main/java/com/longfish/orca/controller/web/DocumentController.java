@@ -2,14 +2,15 @@ package com.longfish.orca.controller.web;
 
 
 import com.longfish.orca.context.SearchStrategyContext;
-import com.longfish.orca.context.UploadStrategyContext;
-import com.longfish.orca.enums.FilePathEnum;
 import com.longfish.orca.pojo.Result;
 import com.longfish.orca.pojo.dto.DocumentByTempDTO;
 import com.longfish.orca.pojo.dto.DocumentDTO;
 import com.longfish.orca.pojo.dto.DocumentUpdateDTO;
 import com.longfish.orca.pojo.dto.PageDTO;
-import com.longfish.orca.pojo.vo.*;
+import com.longfish.orca.pojo.vo.DocumentAbstractVO;
+import com.longfish.orca.pojo.vo.DocumentSearchVO;
+import com.longfish.orca.pojo.vo.DocumentVO;
+import com.longfish.orca.pojo.vo.PageVO;
 import com.longfish.orca.service.IDocumentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,7 +18,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -41,9 +41,6 @@ public class DocumentController {
 
     @Autowired
     private SearchStrategyContext searchStrategyContext;
-
-    @Autowired
-    private UploadStrategyContext uploadStrategyContext;
 
     @Operation(summary = "创建新文档", parameters = {@Parameter(
             name = TOKEN_NAME, required = true,
@@ -201,18 +198,6 @@ public class DocumentController {
     public Result<?> deleteByIdBatchTruly(@PathVariable List<Long> ids) {
         documentService.deleteByIdBatchTruly(ids);
         return Result.success();
-    }
-
-    @Operation(summary = "上传文档图片", parameters = {@Parameter(
-            name = TOKEN_NAME, required = true,
-            in = ParameterIn.HEADER,
-            description = WEB_HEADER_ADVICE,
-            example = WEB_HEADER_VAR)})
-    @PostMapping("/img/upload")
-    public Result<UrlVO> uploadAvatar(MultipartFile file) {
-        return Result.success(UrlVO.builder()
-                .url(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.DOCUMENT.getPath()))
-                .build());
     }
 
     @Operation(summary = "条件修改文档", parameters = {@Parameter(
