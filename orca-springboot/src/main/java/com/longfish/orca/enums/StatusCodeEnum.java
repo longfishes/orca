@@ -45,6 +45,8 @@ public enum StatusCodeEnum {
 
     SYSTEM_ERROR(50000, "系统异常", 500),
 
+    WEBSOCKET_ERROR(50001, "websocket异常", 500),
+
     VALID_ERROR(52000, "参数格式不正确", 500);
 
     private final Integer code;

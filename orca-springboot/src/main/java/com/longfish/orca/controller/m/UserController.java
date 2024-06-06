@@ -5,12 +5,10 @@ import com.longfish.orca.annotation.AccessLimit;
 import com.longfish.orca.annotation.NoLogin;
 import com.longfish.orca.context.BaseContext;
 import com.longfish.orca.context.UploadStrategyContext;
-import com.longfish.orca.enums.FilePathEnum;
 import com.longfish.orca.enums.StatusCodeEnum;
 import com.longfish.orca.pojo.Result;
 import com.longfish.orca.pojo.dto.*;
 import com.longfish.orca.pojo.vo.MobileLoginVO;
-import com.longfish.orca.pojo.vo.UrlVO;
 import com.longfish.orca.pojo.vo.UserVO;
 import com.longfish.orca.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +17,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import static com.longfish.orca.constant.CommonConstant.*;
 
@@ -107,19 +104,6 @@ public class UserController {
     public Result<?> forgot(@RequestBody ForgotDTO forgotDTO) {
         userService.forgot(forgotDTO);
         return Result.success();
-    }
-
-    @Operation(summary = "上传头像图片", parameters = {
-            @Parameter(
-                    name = ID_NAME, required = true,
-                    in = ParameterIn.HEADER,
-                    description = MOBILE_HEADER_ADVICE,
-                    example = MOBILE_HEADER_VAR)})
-    @PostMapping("/avatar/upload")
-    public Result<UrlVO> uploadAvatar(MultipartFile file) {
-        return Result.success(UrlVO.builder()
-                .url(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.AVATAR.getPath()))
-                .build());
     }
 
     @Operation(summary = "修改用户信息", parameters = {@Parameter(

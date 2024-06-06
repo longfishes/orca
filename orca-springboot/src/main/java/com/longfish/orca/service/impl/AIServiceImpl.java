@@ -48,7 +48,7 @@ public class AIServiceImpl implements AIService {
         return Arrays.stream(arr).toList();
     }
 
-    @Override
+
     public InputStream send(String text) {
         try {
             List<String> user = Collections.singletonList("1");

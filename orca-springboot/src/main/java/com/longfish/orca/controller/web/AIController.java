@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -44,11 +43,5 @@ public class AIController {
     public Result<AISessionListVO> listSession() {
         List<String> res = aiService.listSession();
         return Result.success(AISessionListVO.builder().rows(res).total((long)res.size()).build());
-    }
-
-    @Operation(summary = "向大模型发送文本")
-    @PostMapping("/send")
-    public Result<InputStream> send(String text) {
-        return Result.success(aiService.send(text));
     }
 }

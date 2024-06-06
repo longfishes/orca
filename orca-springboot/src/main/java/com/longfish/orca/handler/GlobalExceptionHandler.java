@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public Result noHandlerFoundExceptionHandler(NoHandlerFoundException ex) {
         log.error("不存在的路径, {}", ex.getMessage());
-        response.setStatus(StatusCodeEnum.NO_LOGIN.getHttpStatusCode());
+        response.setStatus(StatusCodeEnum.NOT_FOUND.getHttpStatusCode());
         return Result.error(StatusCodeEnum.NOT_FOUND);
     }
 
