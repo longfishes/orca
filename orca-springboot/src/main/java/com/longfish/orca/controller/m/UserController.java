@@ -16,7 +16,6 @@ import com.longfish.orca.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -110,17 +109,14 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "上传头像图片", parameters = {@Parameter(
-            name = ID_NAME, required = true,
-            in = ParameterIn.HEADER,
-            description = MOBILE_HEADER_ADVICE,
-            example = MOBILE_HEADER_VAR)})
+    @Operation(summary = "上传头像图片", parameters = {
+            @Parameter(
+                    name = ID_NAME, required = true,
+                    in = ParameterIn.HEADER,
+                    description = MOBILE_HEADER_ADVICE,
+                    example = MOBILE_HEADER_VAR)})
     @PostMapping("/avatar/upload")
-    public Result<UrlVO> uploadAvatar(@Parameter(schema = @Schema(
-            requiredMode = Schema.RequiredMode.REQUIRED,
-            type = "file",
-            description = "jpg, png等格式文件文件"
-    )) MultipartFile file) {
+    public Result<UrlVO> uploadAvatar(MultipartFile file) {
         return Result.success(UrlVO.builder()
                 .url(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.AVATAR.getPath()))
                 .build());
