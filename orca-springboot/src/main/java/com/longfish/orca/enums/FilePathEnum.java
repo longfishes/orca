@@ -7,7 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum FilePathEnum {
 
-    AVATAR("avatar/user/", "头像路径");
+    AVATAR("avatar/user/", "头像路径"),
+
+    DOCUMENT("document/img/", "文档图片路径");
 
     private final String path;
 

@@ -10,11 +10,13 @@ import com.longfish.orca.enums.StatusCodeEnum;
 import com.longfish.orca.pojo.Result;
 import com.longfish.orca.pojo.dto.*;
 import com.longfish.orca.pojo.vo.LoginVO;
+import com.longfish.orca.pojo.vo.UrlVO;
 import com.longfish.orca.pojo.vo.UserVO;
 import com.longfish.orca.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -114,8 +116,14 @@ public class UserController {
             description = WEB_HEADER_ADVICE,
             example = WEB_HEADER_VAR)})
     @PostMapping("/avatar/upload")
-    public Result<?> uploadAvatar(MultipartFile file) {
-        return Result.success(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.AVATAR.getPath()));
+    public Result<UrlVO> uploadAvatar(@Parameter(schema = @Schema(
+            requiredMode = Schema.RequiredMode.REQUIRED,
+            type = "file",
+            description = "jpg, png等格式文件文件"
+    )) MultipartFile file) {
+        return Result.success(UrlVO.builder()
+                .url(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.AVATAR.getPath()))
+                .build());
     }
 
     @Operation(summary = "修改用户信息", parameters = {@Parameter(
