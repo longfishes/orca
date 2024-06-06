@@ -15,7 +15,7 @@ const formModel = ref({
 // 预校验
 // 规则rule,表单数据绑定formModel,规则绑定prop,v-model双向绑定
 const checkPhone = (rule, value, callback) => {
-  const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
+  const reg = /^1[3-9]\\d{9}$/
   const regEmail = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/
 
   if (!value) {

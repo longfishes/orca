@@ -89,13 +89,16 @@
               style="width: 36px; height: 36px"
             />
           </el-button>
-          <el-dropdown  @command="handleCommand">
+          <el-dropdown @command="handleCommand">
             <el-avatar
               src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
               class="headshot"
             />
             <template #dropdown>
-              <el-dropdown-menu class="flexpf" style="width: 307px;align-items: center;">
+              <el-dropdown-menu
+                class="flexpf"
+                style="width: 307px; align-items: center"
+              >
                 <div class="top">
                   <el-avatar
                     src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
@@ -120,21 +123,33 @@
       </el-header>
       <el-main>
         <div class="nav flex">
-          <div class="new nav-sub flex">
-            <img
-              src="@/assets/icons/document.png"
-              alt=""
-              style="width: 52px; height: 52px"
-            />
-            <div class="info flexpf">
-              <p>新建</p>
-              <span>新建文档开始编辑</span>
+          <div
+            class="new nav-sub flex"
+            style="position: relative"
+            v-outside="handleOut"
+          >
+            <div class="wrap flex" @click="showDrop = !showDrop">
+              <img
+                src="@/assets/icons/document.png"
+                alt=""
+                style="width: 52px; height: 52px"
+              />
+              <div class="info flexpf">
+                <p>新建</p>
+                <span>新建文档开始编辑</span>
+              </div>
+              <img
+                src="@/assets/icons/bottom-arrow2.png"
+                alt=""
+                style="width: 24px; height: 24px"
+              />
             </div>
-            <img
-              src="@/assets/icons/bottom-arrow2.png"
-              alt=""
-              style="width: 24px; height: 24px"
-            />
+            <div class="newDrop flexpf" v-if="showDrop">
+              <div class="title"><strong>新建</strong></div>
+              <span>文档</span>
+              <span>文件夹</span>
+              <span>导入</span>
+            </div>
           </div>
 
           <div class="import nav-sub flex">
@@ -177,23 +192,11 @@
 </template>
 
 <script setup>
-import {
-  Search,
-  Bell,
-  Menu,
-  DocumentAdd,
-  CaretBottom,
-  UploadFilled,
-  Management,
-  House,
-  Folder,
-  Opportunity
-} from '@element-plus/icons-vue'
+import { Search } from '@element-plus/icons-vue'
 // import { ref } from 'vue'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 const router = useRouter()
 const handleCommand = async (key) => {
-  
   if (key === 'logout') {
     await ElMessageBox.confirm('你确认要退出吗?', '温馨提示', {
       confirmButtonText: '确认',
@@ -204,6 +207,11 @@ const handleCommand = async (key) => {
   } else {
     router.push(`/user/${key}`)
   }
+}
+import { ref } from 'vue'
+const showDrop = ref(false)
+const handleOut = () => {
+  showDrop.value = false
 }
 </script>
 
@@ -284,6 +292,21 @@ const handleCommand = async (key) => {
     }
     .el-main {
       .nav {
+        .newDrop {
+          position: absolute;
+          bottom: -280px;
+          left: 0;
+          box-shadow: 0 0 3px 3px #efefef;
+          width: 150px;
+          height: 270px;
+          z-index: 100;
+          background-color: #fff;
+          align-items: center;
+          span {
+            height: 50px;
+            line-height: 50px;
+          }
+        }
         .nav-sub {
           width: 25%;
           height: 85px;
