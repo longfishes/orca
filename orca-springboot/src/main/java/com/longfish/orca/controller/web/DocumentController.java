@@ -205,10 +205,10 @@ public class DocumentController {
     }
 
     @Operation(summary = "上传文档图片", parameters = {@Parameter(
-            name = ID_NAME, required = true,
+            name = TOKEN_NAME, required = true,
             in = ParameterIn.HEADER,
-            description = MOBILE_HEADER_ADVICE,
-            example = MOBILE_HEADER_VAR)})
+            description = WEB_HEADER_ADVICE,
+            example = WEB_HEADER_VAR)})
     @PostMapping("/avatar/upload")
     public Result<UrlVO> uploadAvatar(@Parameter(schema = @Schema(
             requiredMode = Schema.RequiredMode.REQUIRED,
