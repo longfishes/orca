@@ -1,6 +1,7 @@
 package com.longfish.orca.pojo;
 
 import com.longfish.orca.enums.StatusCodeEnum;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,8 +13,12 @@ import java.io.Serializable;
 @Data
 public class Result<T> implements Serializable {
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "200")
     private Integer code;
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "操作成功")
     private String msg;
+
     private T data;
 
     public static <T> Result<T> success() {

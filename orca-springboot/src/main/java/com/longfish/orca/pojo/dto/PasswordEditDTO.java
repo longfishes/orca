@@ -1,5 +1,6 @@
 package com.longfish.orca.pojo.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PasswordEditDTO {
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "123")
     private String oldPassword;
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "321")
     private String newPassword;
 }

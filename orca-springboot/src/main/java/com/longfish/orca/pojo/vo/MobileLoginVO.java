@@ -1,5 +1,6 @@
 package com.longfish.orca.pojo.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,5 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MobileLoginVO {
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "YoNpoDuAljBOfUO7Ed3qGQ==")
     private String uid;
 }

@@ -13,10 +13,14 @@ import com.longfish.orca.pojo.vo.LoginVO;
 import com.longfish.orca.pojo.vo.UserVO;
 import com.longfish.orca.service.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import static com.longfish.orca.constant.CommonConstant.*;
 
 /**
  * <p>
@@ -44,22 +48,26 @@ public class UserController {
         return userService.usernameUniqueCheck(username) ? Result.error(StatusCodeEnum.USER_EXIST) : Result.success();
     }
 
-    @PostMapping("/lambdaLogin")
     @Operation(summary = "条件登录密码")
+    @PostMapping("/lambdaLogin")
     @NoLogin
     public Result<LoginVO> login(@RequestBody LambdaLoginDTO lambdaLoginDTO) {
         return Result.success(LoginVO.builder().jwt(userService.login(lambdaLoginDTO)).build());
     }
 
-    @PostMapping("/lambdaCodeLogin")
     @Operation(summary = "条件登录验证码")
+    @PostMapping("/lambdaCodeLogin")
     @NoLogin
     public Result<LoginVO> loginByCode(@RequestBody LambdaCodeLoginDTO lambdaCodeLoginDTO) {
         return Result.success(LoginVO.builder().jwt(userService.codeLogin(lambdaCodeLoginDTO)).build());
     }
 
+    @Operation(summary = "退出登录", parameters = {@Parameter(
+            name = TOKEN_NAME, required = true,
+            in = ParameterIn.HEADER,
+            description = WEB_HEADER_ADVICE,
+            example = WEB_HEADER_VAR)})
     @GetMapping("/logout")
-    @Operation(summary = "退出登录")
     public Result<?> logout() {
         BaseContext.removeCurrentId();
         return Result.success();
@@ -82,7 +90,11 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "我的信息")
+    @Operation(summary = "我的信息", parameters = {@Parameter(
+            name = TOKEN_NAME, required = true,
+            in = ParameterIn.HEADER,
+            description = WEB_HEADER_ADVICE,
+            example = WEB_HEADER_VAR)})
     @GetMapping("/me")
     public Result<UserVO> me() {
         return Result.success(userService.me());
@@ -96,41 +108,65 @@ public class UserController {
         return Result.success();
     }
 
-    @Operation(summary = "上传头像图片")
+    @Operation(summary = "上传头像图片", parameters = {@Parameter(
+            name = TOKEN_NAME, required = true,
+            in = ParameterIn.HEADER,
+            description = WEB_HEADER_ADVICE,
+            example = WEB_HEADER_VAR)})
     @PostMapping("/avatar/upload")
     public Result<?> uploadAvatar(MultipartFile file) {
         return Result.success(uploadStrategyContext.executeUploadStrategy(file, FilePathEnum.AVATAR.getPath()));
     }
 
-    @Operation(summary = "修改用户信息")
+    @Operation(summary = "修改用户信息", parameters = {@Parameter(
+            name = TOKEN_NAME, required = true,
+            in = ParameterIn.HEADER,
+            description = WEB_HEADER_ADVICE,
+            example = WEB_HEADER_VAR)})
     @PutMapping("/info")
     public Result<?> update(@RequestBody UserInfoDTO userInfoDTO) {
         userService.updateInfo(userInfoDTO);
         return Result.success();
     }
 
-    @Operation(summary = "修改密码")
+    @Operation(summary = "修改密码", parameters = {@Parameter(
+            name = TOKEN_NAME, required = true,
+            in = ParameterIn.HEADER,
+            description = WEB_HEADER_ADVICE,
+            example = WEB_HEADER_VAR)})
     @PutMapping("/password")
     public Result<?> editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
         userService.editPassword(passwordEditDTO);
         return Result.success();
     }
 
-    @Operation(summary = "修改用户名")
+    @Operation(summary = "修改用户名", parameters = {@Parameter(
+            name = TOKEN_NAME, required = true,
+            in = ParameterIn.HEADER,
+            description = WEB_HEADER_ADVICE,
+            example = WEB_HEADER_VAR)})
     @PutMapping("/username")
     public Result<?> editUsername(@RequestBody UsernameDTO usernameDTO) {
         userService.editUsername(usernameDTO);
         return Result.success();
     }
 
-    @Operation(summary = "绑定手机")
+    @Operation(summary = "绑定手机", parameters = {@Parameter(
+            name = TOKEN_NAME, required = true,
+            in = ParameterIn.HEADER,
+            description = WEB_HEADER_ADVICE,
+            example = WEB_HEADER_VAR)})
     @PutMapping("/phone")
     public Result<?> bindPhone(@RequestBody PhoneBindDTO phoneBindDTO) {
         userService.bindPhone(phoneBindDTO);
         return Result.success();
     }
 
-    @Operation(summary = "绑定邮箱")
+    @Operation(summary = "绑定邮箱", parameters = {@Parameter(
+            name = TOKEN_NAME, required = true,
+            in = ParameterIn.HEADER,
+            description = WEB_HEADER_ADVICE,
+            example = WEB_HEADER_VAR)})
     @PutMapping("/email")
     public Result<?> bindEmail(@RequestBody EmailBindDTO emailBindDTO) {
         userService.bindEmail(emailBindDTO);

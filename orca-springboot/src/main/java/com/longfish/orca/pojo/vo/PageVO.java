@@ -1,6 +1,7 @@
 package com.longfish.orca.pojo.vo;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,8 +12,10 @@ import java.util.List;
 @NoArgsConstructor
 public class PageVO<T> implements Serializable {
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "20")
     private Long total;
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     private List<T> rows;
 
     public PageVO(Page<T> page) {

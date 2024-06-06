@@ -22,4 +22,16 @@ public interface CommonConstant {
 
     String POST_TAG = "</mark>";
 
+    String TOKEN_NAME = "Authorization";
+
+    String ID_NAME = "uid";
+
+    String WEB_HEADER_ADVICE = "【Web 端】登录后返回jwt令牌，之后所有请求请携带此参数";
+
+    String MOBILE_HEADER_ADVICE = "【移动端】登录后返回uid参数，之后所有请求请携带此参数";
+
+    String WEB_HEADER_VAR = "{{token}}";
+
+    String MOBILE_HEADER_VAR = "{{uid}}";
+
 }

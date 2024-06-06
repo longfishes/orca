@@ -1,5 +1,6 @@
 package com.longfish.orca.pojo.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class DocumentUpdateDTO {
 
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED, example = "11")
     private Long id;
 
     private String title;
@@ -25,7 +27,6 @@ public class DocumentUpdateDTO {
 
     private Boolean isTop;
 
-    private Boolean isLocked;
-
+    @Schema(description = "0-私密 1-公开", example = "0")
     private Boolean status;
 }

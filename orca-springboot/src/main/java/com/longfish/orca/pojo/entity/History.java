@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -26,7 +27,8 @@ import java.time.LocalDateTime;
 @Builder
 public class History implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    @Serial
+    private static final long serialVersionUID = 1775400909L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
