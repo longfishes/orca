@@ -1,15 +1,16 @@
 <template>
-   <tinymce :message="parentMessage"></tinymce>
+  <tinymce></tinymce>
 </template>
 
 <script setup>
-    import Tinymce from '@/views/tinymce/tinymce.vue'
-    import { ref } from 'vue'
-    const parentMessage = ref('')
-    parentMessage.value = '这是父组件传过来的值'
-    console.log(parentMessage.value)
+import { useRoute } from 'vue-router';
+const route = useRoute();
+import Tinymce from '@/views/tinymce/tinymce.vue'
+import { ref } from 'vue'
+console.log(route.params.id)
+import {useDetailStore} from '@/stores'
+const detailStore = useDetailStore()
+detailStore.getWordData(route.params.id)
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

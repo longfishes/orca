@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from 'vue'
+import { useDetailStore } from '@/stores'
+const detailStore = useDetailStore()
 const tableList = ref([
   {
     id: 1,
@@ -22,6 +24,12 @@ const tableList = ref([
     time: '2024/06/01'
   }
 ])
+detailStore.getList({
+  pageNo: 1,
+  pageSize: 1000,
+  sortBy: 'update_time',
+  isAsc: false
+})
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const handleRowClick = (row, column) => {
@@ -42,14 +50,17 @@ const handleRowClick = (row, column) => {
       </template>
 
       <el-table
-        :data="tableList"
+        :data="detailStore.list"
         :row-style="{ height: '60px' }"
         @row-click="handleRowClick"
       >
-        <el-table-column prop="type" label="类型"> </el-table-column>
+        <el-table-column prop="title" label="名称"> </el-table-column>
         <el-table-column prop="belong" label="归属"></el-table-column>
-        <el-table-column prop="position" label="位置"></el-table-column>
-        <el-table-column prop="time" label="最后浏览时间"></el-table-column>
+        <el-table-column prop="path" label="位置"></el-table-column>
+        <el-table-column
+          prop="updateTime"
+          label="最后浏览时间"
+        ></el-table-column>
       </el-table>
     </el-tab-pane>
     <el-tab-pane>
