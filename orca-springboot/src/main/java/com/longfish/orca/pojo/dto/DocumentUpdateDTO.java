@@ -23,10 +23,11 @@ public class DocumentUpdateDTO {
 
     private String content;
 
+    @Schema(example = "/")
     private String path;
 
     private Boolean isTop;
 
-    @Schema(description = "0-私密 1-公开", example = "0")
+    @Schema(type = "int32", description = "0-私密 1-公开", example = "0")
     private Boolean status;
 }
