@@ -2,6 +2,7 @@ package com.longfish.orca.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.longfish.orca.constant.RabbitMQConstant;
 import com.longfish.orca.context.BaseContext;
@@ -385,26 +386,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void updateInfo(UserInfoDTO userInfoDTO) {
         User update = User.builder().build();
 
-        if (!userInfoDTO.getNickname().equals("")) {
+        if (!StringUtils.isBlank(userInfoDTO.getNickname())) {
             update.setNickname(userInfoDTO.getNickname());
         }
-        if (!userInfoDTO.getAvatar().equals("")) {
+        if (!StringUtils.isBlank(userInfoDTO.getAvatar())) {
             update.setAvatar(userInfoDTO.getAvatar());
         }
-        if (!userInfoDTO.getInfo().equals("")) {
+        if (!StringUtils.isBlank(userInfoDTO.getInfo())) {
             update.setInfo(userInfoDTO.getInfo());
         }
         if (userInfoDTO.getGender() != 0) {
             update.setGender(userInfoDTO.getGender());
         }
-        if (!userInfoDTO.getBirthday().equals("")) {
+        if (!StringUtils.isBlank(userInfoDTO.getBirthday())) {
             try {
                 update.setBirthday(LocalDate.parse(userInfoDTO.getBirthday()));
             } catch (Exception e) {
                 throw new BizException(StatusCodeEnum.DATE_FORMAT_ERROR);
             }
         }
-        if (!userInfoDTO.getLocation().equals("")) {
+        if (!StringUtils.isBlank(userInfoDTO.getLocation())) {
             update.setLocation(userInfoDTO.getLocation());
         }
 

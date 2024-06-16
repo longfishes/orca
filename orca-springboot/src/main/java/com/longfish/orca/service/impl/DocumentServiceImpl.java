@@ -180,19 +180,19 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
         }
         Document update = BeanUtil.copyProperties(documentUpdateDTO, Document.class);
 
-        if (update.getTitle().equals("")) {
+        if (StringUtils.isBlank(update.getTitle())) {
             update.setTitle(null);
         }
-        if (update.getCover().equals("")) {
+        if (StringUtils.isBlank(update.getCover())) {
             update.setCover(null);
         }
-        if (update.getDocAbstract().equals("")) {
+        if (StringUtils.isBlank(update.getDocAbstract())) {
             update.setDocAbstract(null);
         }
-        if (update.getContent().equals("")) {
+        if (StringUtils.isBlank(update.getContent())) {
             update.setContent(null);
         }
-        if (update.getPath().equals("")) {
+        if (StringUtils.isBlank(update.getPath())) {
             update.setPath(null);
         }
         update.setUpdateTime(LocalDateTime.now());
