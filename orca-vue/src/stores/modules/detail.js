@@ -1,39 +1,22 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getWordDataAPI, getListAPI } from '@/api/detail'
+import { getWordDataAPI, getListAPI, updateDetailAPI } from '@/api/detail'
 
 export const useDetailStore = defineStore(
   'tinymceDetail',
   () => {
-    const wordData = ref([
-      {
-        id: 1,
-        type: '文档',
-        belong: 'whr',
-        position: '前端文件夹',
-        time: '2024/06/01',
-        content: '这是文档的内容'
-      },
-      {
-        id: 2,
-        type: '文档',
-        belong: 'whr',
-        position: '前端文件夹',
-        time: '2024/06/01',
-        content: '这是文档2的内容'
-      },
-      {
-        id: 3,
-        type: '文档',
-        belong: 'whr',
-        position: '前端文件夹',
-        time: '2024/06/01',
-        content: '这是文档3的内容'
-      }
-    ])
+    // 每条文章的详情数据
+    const wordData = ref([])
+    // 表格的列表数据
     const list = ref([])
+    // tinymce传回来的最新文本内容
+    const updateContent = ref('')
+    const getUpdateContent = (content) => {
+      updateContent.value = content
+      console.log(updateContent.value)
+    }
     const getList = async (data) => {
-        const res = await getListAPI(data)
+      const res = await getListAPI(data)
       list.value = res.data.data.rows
     }
     // 获取详情数据
@@ -43,11 +26,18 @@ export const useDetailStore = defineStore(
 
       console.log(wordData.value)
     }
+    const updateDetail = async (data) => {
+      const res = await updateDetailAPI(data)
+      console.log(res)
+    }
     return {
       wordData,
       getWordData,
-        getList,
-        list
+      getList,
+      list,
+      updateDetail,
+      getUpdateContent,
+      updateContent
     }
   },
   { persist: true }

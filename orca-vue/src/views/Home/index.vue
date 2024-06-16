@@ -2,28 +2,7 @@
 import { ref } from 'vue'
 import { useDetailStore } from '@/stores'
 const detailStore = useDetailStore()
-const tableList = ref([
-  {
-    id: 1,
-    type: '文档',
-    belong: 'whr',
-    position: '前端文件夹',
-    time: '2024/06/01'
-  },
-  {
-    id: 2,
-    type: '文档',
-    belong: 'whr',
-    position: '前端文件夹',
-    time: '2024/06/01'
-  },
-  {
-    type: '文档',
-    belong: 'whr',
-    position: '前端文件夹',
-    time: '2024/06/01'
-  }
-])
+
 detailStore.getList({
   pageNo: 1,
   pageSize: 1000,

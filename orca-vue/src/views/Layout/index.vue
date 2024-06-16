@@ -144,11 +144,37 @@
                 style="width: 24px; height: 24px"
               />
             </div>
-            <div class="newDrop flexpf" v-if="showDrop">
+            <div class="newDrop" v-if="showDrop">
               <div class="title"><strong>新建</strong></div>
-              <span>文档</span>
-              <span>文件夹</span>
-              <span>导入</span>
+              <div class="new-by">
+                <div class="docum flexpf" style="width: 58px; height: 76px" @click="$router.push()">
+                  <img
+                    src="@/assets/icons/document1-active.png"
+                    alt=""
+                    style="width: 42px; height: 42px"
+                  />
+                  <span>文档</span>
+                </div>
+                <div class="folder flexpf" style="width: 58px; height: 76px">
+                  <img
+                    src="@/assets/icons/document1-active.png"
+                    alt=""
+                    style="width: 42px; height: 42px"
+                  />
+                  <span>文件夹</span>
+                </div>
+                <div
+                  class="import flexpf"
+                  style="width: 58px; height: 76px; margin-top: 5px"
+                >
+                  <img
+                    src="@/assets/icons/import.png"
+                    alt=""
+                    style="width: 42px; height: 42px"
+                  />
+                  <span>文档</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -302,6 +328,19 @@ const handleOut = () => {
           z-index: 100;
           background-color: #fff;
           align-items: center;
+          .title {
+            padding-left: 15px;
+            font-weight: 700;
+            font-size: 18px;
+          }
+          .new-by {
+            margin: 0 auto;
+            width: 100%;
+            padding-left: 20px;
+            display: flex;
+            // 换行
+            flex-wrap: wrap;
+          }
           span {
             height: 50px;
             line-height: 50px;

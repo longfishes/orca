@@ -18,7 +18,7 @@ export default {
   setup() {
     const content = ref('默认文字 hello wor')
     content.value = detailStore.wordData.content
-    console.log(detailStore.wordData.content)
+    
     const tiny = reactive({
       apiKey: 'qagffr3pkuv17a8on1afax661irst1hbr4e6tbv888sz91jc', //https://github.com/tinymce/tinymce-vue/blob/main/src/demo/views/Iframe.vue
       init: {
@@ -104,6 +104,11 @@ export default {
 
       ...toRefs(tiny)
     }
+  },
+  beforeUnmount() {
+    
+    console.log(this.content)
+   detailStore.getUpdateContent(this.content)
   }
 }
 </script>
