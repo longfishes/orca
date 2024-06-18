@@ -147,7 +147,11 @@
             <div class="newDrop" v-if="showDrop">
               <div class="title"><strong>新建</strong></div>
               <div class="new-by">
-                <div class="docum flexpf" style="width: 58px; height: 76px" @click="$router.push()">
+                <div
+                  class="docum flexpf"
+                  style="width: 58px; height: 76px"
+                  @click="$router.push('/newdocum')"
+                >
                   <img
                     src="@/assets/icons/document1-active.png"
                     alt=""

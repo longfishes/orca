@@ -5,7 +5,7 @@
 <script setup>
 import { useRoute } from 'vue-router'
 const route = useRoute()
-import Tinymce from '@/views/tinymce/tinymce.vue'
+import Tinymce from '@/views/tinymce/tinymceNew.vue'
 import { ref } from 'vue'
 
 </script>
