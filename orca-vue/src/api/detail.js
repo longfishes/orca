@@ -8,18 +8,18 @@ export const getWordDataAPI = (id) => {
 // 获取文章表格
 export const getListAPI = (data) => {
   return request({
-    url: '/document/list',
-    method: 'POST',
+    url: '/document/path',
+   
     data
   })
 }
 // 修改文章
 export const updateDetailAPI = ({
   id,
-  title = 'string',
+  title,
   cover = 'string',
   docAbstract = 'string',
-  content ,
+  content,
   path = '/',
   isTop = false,
   status = false
@@ -37,5 +37,13 @@ export const updateDetailAPI = ({
       isTop,
       status
     }
+  })
+}
+// 新建文档
+export const CreateNewAPI = (data) => {
+  return request({
+    url: '/document/create',
+    method: 'POST',
+    data
   })
 }

@@ -1,14 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import { useDetailStore } from '@/stores'
+import { getListAPI } from '@/api/detail'
 const detailStore = useDetailStore()
+const list = ref([])
 
-detailStore.getList({
-  pageNo: 1,
-  pageSize: 1000,
-  sortBy: 'update_time',
-  isAsc: false
-})
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const handleRowClick = (row, column) => {
@@ -19,6 +15,17 @@ const handleRowClick = (row, column) => {
   // 假设你的详情页路由是 '/detail/:id'，并且你的行数据中包含 'id' 属性
   router.push(`/detail/${row.id}`)
 }
+const getList = () => {
+  const intervalId = setInterval(async () => {
+    if (detailStore.flag) {
+      console.log('可以了')
+      const res = await getListAPI('/')
+      list.value = res.data.data
+      clearInterval(intervalId)
+    }
+  }, 1000)
+}
+getList()
 </script>
 
 <template>
@@ -29,7 +36,7 @@ const handleRowClick = (row, column) => {
       </template>
 
       <el-table
-        :data="detailStore.list"
+        :data="list"
         :row-style="{ height: '60px' }"
         @row-click="handleRowClick"
       >

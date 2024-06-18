@@ -8,6 +8,8 @@
 import Editor from '@tinymce/tinymce-vue'
 import { reactive, ref, toRefs } from 'vue'
 import { useDetailStore } from '@/stores'
+import { updateDetailAPI, getWordDataAPI } from '@/api/detail'
+
 const detailStore = useDetailStore()
 export default {
   name: 'About',
@@ -17,8 +19,14 @@ export default {
 
   setup() {
     const content = ref('默认文字 hello wor')
-    content.value = detailStore.wordData.content
-    
+    // 文章详情回显
+    const getDetail = async () => {
+      const res = await getWordDataAPI(detailStore.idRouter)
+      content.value = res.data.data.content
+      console.log(content.value)
+    }
+    getDetail()
+
     const tiny = reactive({
       apiKey: 'qagffr3pkuv17a8on1afax661irst1hbr4e6tbv888sz91jc', //https://github.com/tinymce/tinymce-vue/blob/main/src/demo/views/Iframe.vue
       init: {
@@ -106,9 +114,40 @@ export default {
     }
   },
   beforeUnmount() {
-    
     console.log(this.content)
-   detailStore.getUpdateContent(this.content)
+
+    // 处理标题逻辑
+
+    // 使用DOMParser来解析HTML
+
+    const parser = new DOMParser()
+
+    const doc = parser.parseFromString(this.content, 'text/html')
+
+    // 查找第一个<p>标签
+
+    const firstParagraph = doc.body.querySelector('p')
+
+    // 获取第一段文本（如果存在）
+
+    if (firstParagraph) {
+      this.firstParagraphText =
+        firstParagraph.textContent || firstParagraph.innerText
+
+      console.log(this.firstParagraphText) // 输出: 这是第一段文本。
+    }
+    // 上传修改的文档
+    const createNew = async () => {
+      detailStore.flag = false
+      await updateDetailAPI({
+        title: this.firstParagraphText,
+
+        content: this.content,
+        id: detailStore.idRouter
+      })
+      detailStore.flag = true
+    }
+    createNew()
   }
 }
 </script>
