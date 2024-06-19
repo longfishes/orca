@@ -21,7 +21,9 @@ public interface RedisService {
 
     Set<String> keys();
 
-    Set<String> keys(String prefix);
+    Set<String> keys(String pattern);
+
+    Set<String> keysPrefix(String prefix);
 
     Boolean del(String key);
 

@@ -23,7 +23,7 @@ import java.util.List;
  * @author longfish
  * @since 2024-05-16
  */
-@RestController
+@RestController("aiController")
 @RequestMapping("/ai")
 @Tag(name = "AI模型相关")
 @Slf4j

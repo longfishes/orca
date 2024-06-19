@@ -45,7 +45,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public Set<String> keys(String prefix) {
+    public Set<String> keysPrefix(String prefix) {
         return redisTemplate.keys(prefix + ":*");
     }
 
@@ -53,6 +53,11 @@ public class RedisServiceImpl implements RedisService {
     public Set<String> keys() {
         return redisTemplate.keys("*");
     }
+    @Override
+    public Set<String> keys(String pattern) {
+        return redisTemplate.keys(pattern);
+    }
+
 
     @Override
     public Boolean del(String key) {

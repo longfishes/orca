@@ -78,7 +78,7 @@ class OrcaSpringbootApplicationTests {
 
     @Test
     void testRedisGetTopic() {
-        Set<String> keys = redisService.keys(AI_SESSION + ":5");
+        Set<String> keys = redisService.keysPrefix(AI_SESSION + ":5");
         keys.forEach(k -> {
             String[] split = k.split(":");
             System.out.println(split[split.length - 1]);

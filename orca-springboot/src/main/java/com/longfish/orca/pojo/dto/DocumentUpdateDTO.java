@@ -28,6 +28,6 @@ public class DocumentUpdateDTO {
 
     private Boolean isTop;
 
-    @Schema(type = "int32", description = "0-私密 1-公开", example = "0")
+    @Schema(description = "0-私密 1-公开", example = "0")
     private Boolean status;
 }

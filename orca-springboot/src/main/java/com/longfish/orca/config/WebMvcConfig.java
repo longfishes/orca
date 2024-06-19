@@ -3,7 +3,6 @@ package com.longfish.orca.config;
 import com.longfish.orca.interceptor.AccessLimitInterceptor;
 import com.longfish.orca.interceptor.JwtTokenInterceptor;
 import com.longfish.orca.interceptor.MobileCurrentIdInterceptor;
-import com.longfish.orca.interceptor.WebSocketInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +23,8 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     @Autowired
     private MobileCurrentIdInterceptor mobileCurrentIdInterceptor;
 
-    @Autowired
-    private WebSocketInterceptor webSocketInterceptor;
+//    @Autowired
+//    private WebSocketInterceptor webSocketInterceptor;
 
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
@@ -40,8 +39,8 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
                 .excludePathPatterns("/ws/**")
                 .addPathPatterns("/m/**");
 
-        registry.addInterceptor(webSocketInterceptor)
-                .addPathPatterns("/ws/**");
+//        registry.addInterceptor(webSocketInterceptor)
+//                .addPathPatterns("/ws/**");
 
         registry.addInterceptor(accessLimitInterceptor);
     }
