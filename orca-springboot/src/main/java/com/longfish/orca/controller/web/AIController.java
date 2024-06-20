@@ -1,17 +1,16 @@
 package com.longfish.orca.controller.web;
 
 import com.longfish.orca.pojo.Result;
+import com.longfish.orca.pojo.dto.ContentDTO;
 import com.longfish.orca.pojo.vo.AISessionListVO;
 import com.longfish.orca.pojo.vo.AISessionVO;
+import com.longfish.orca.pojo.vo.TitleVO;
 import com.longfish.orca.service.AIService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,5 +42,11 @@ public class AIController {
     public Result<AISessionListVO> listSession() {
         List<String> res = aiService.listSession();
         return Result.success(AISessionListVO.builder().rows(res).total((long)res.size()).build());
+    }
+
+    @Operation(summary = "智能标题")
+    @PostMapping("/title")
+    public Result<TitleVO> smartTitle(@RequestBody ContentDTO contentDTO) {
+        return Result.success(TitleVO.builder().title(aiService.smartTitle(contentDTO)).build());
     }
 }

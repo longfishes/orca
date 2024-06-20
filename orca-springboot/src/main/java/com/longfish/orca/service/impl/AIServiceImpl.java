@@ -1,10 +1,13 @@
 package com.longfish.orca.service.impl;
 
 import com.longfish.orca.context.BaseContext;
+import com.longfish.orca.pojo.dto.ContentDTO;
+import com.longfish.orca.properties.PyProperties;
 import com.longfish.orca.service.AIService;
 import com.longfish.orca.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -20,8 +23,11 @@ public class AIServiceImpl implements AIService {
     @Autowired
     private RedisService redisService;
 
-//    @Value("${py.baseUrl}")
-//    private String preUrl;
+    @Autowired
+    private PyProperties pyProperties;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     private int i = 0;
 
@@ -46,6 +52,14 @@ public class AIServiceImpl implements AIService {
         Arrays.sort(arr, (o1, o2) -> (int)(redisService.getExpire(prefix + ":" + o1)
                 - redisService.getExpire(prefix + ":" + o2)) % 1000000007);
         return Arrays.stream(arr).toList();
+    }
+
+    @Override
+    public String smartTitle(ContentDTO contentDTO) {
+        return restTemplate.postForEntity(
+                pyProperties.getBaseUrl() + "/title",
+                contentDTO,
+                String.class).getBody();
     }
 
 }
