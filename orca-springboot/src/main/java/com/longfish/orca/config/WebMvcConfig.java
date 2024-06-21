@@ -23,9 +23,6 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     @Autowired
     private MobileCurrentIdInterceptor mobileCurrentIdInterceptor;
 
-//    @Autowired
-//    private WebSocketInterceptor webSocketInterceptor;
-
     @Override
     protected void addInterceptors(InterceptorRegistry registry) {
         log.info("addInterceptors...");
@@ -38,9 +35,6 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         registry.addInterceptor(mobileCurrentIdInterceptor)
                 .excludePathPatterns("/ws/**")
                 .addPathPatterns("/m/**");
-
-//        registry.addInterceptor(webSocketInterceptor)
-//                .addPathPatterns("/ws/**");
 
         registry.addInterceptor(accessLimitInterceptor);
     }

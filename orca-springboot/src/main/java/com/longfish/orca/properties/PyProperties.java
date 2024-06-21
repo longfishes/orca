@@ -10,4 +10,12 @@ import org.springframework.stereotype.Component;
 public class PyProperties {
 
     private String baseUrl;
+
+    private String ocrUrl;
+
+    private String ocrPath;
+
+    private String headerName;
+
+    private String accessKey;
 }

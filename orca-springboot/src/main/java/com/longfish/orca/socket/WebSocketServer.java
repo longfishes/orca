@@ -1,6 +1,5 @@
 package com.longfish.orca.socket;
 
-import com.longfish.orca.config.WebSocketConfig;
 import com.longfish.orca.enums.StatusCodeEnum;
 import com.longfish.orca.properties.PyProperties;
 import com.longfish.orca.service.RedisService;
@@ -24,7 +23,7 @@ import java.util.*;
 import static com.longfish.orca.constant.DatabaseConstant.AI_SESSION;
 
 @Component
-@ServerEndpoint(value = "/ws/msg/{sessionId}", configurator = WebSocketConfig.class)
+@ServerEndpoint(value = "/ws/msg/{sessionId}")
 @Slf4j
 public class WebSocketServer {
 
