@@ -49,4 +49,10 @@ public class AIController {
     public Result<TitleVO> smartTitle(@RequestBody ContentDTO contentDTO) {
         return Result.success(TitleVO.builder().title(aiService.smartTitle(contentDTO)).build());
     }
+
+    @Operation(summary = "文字识别")
+    @PostMapping("/ocr")
+    public Result<?> ocrPredict() {
+        return Result.success();
+    }
 }
