@@ -17,7 +17,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-import static com.longfish.orca.constant.CommonConstant.APPLICATION_JSON;
+import static com.longfish.orca.constant.CommonConstant.APPLICATION_JSON_UTF8;
 
 @Slf4j
 @Component
@@ -53,7 +53,7 @@ public class AccessLimitInterceptor implements HandlerInterceptor {
     }
 
     private void render(HttpServletResponse response, Result<?> result) throws Exception {
-        response.setContentType(APPLICATION_JSON);
+        response.setContentType(APPLICATION_JSON_UTF8);
         OutputStream out = response.getOutputStream();
         String str = JSON.toJSONString(result);
         out.write(str.getBytes(StandardCharsets.UTF_8));

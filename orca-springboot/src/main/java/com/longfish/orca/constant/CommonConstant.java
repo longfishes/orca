@@ -12,7 +12,9 @@ public interface CommonConstant {
 
     String UNKNOWN = "未知";
 
-    String APPLICATION_JSON = "application/json;charset=utf-8";
+    String APPLICATION_JSON_UTF8 = "application/json;charset=utf-8";
+
+    String APPLICATION_JSON = "application/json";
 
     String TEXT_STREAM = "text/event-stream";
 
