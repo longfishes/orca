@@ -2,15 +2,14 @@ package com.longfish.orca.controller.web;
 
 import com.longfish.orca.pojo.Result;
 import com.longfish.orca.pojo.dto.ContentDTO;
-import com.longfish.orca.pojo.vo.AISessionListVO;
-import com.longfish.orca.pojo.vo.AISessionVO;
-import com.longfish.orca.pojo.vo.TitleVO;
+import com.longfish.orca.pojo.vo.*;
 import com.longfish.orca.service.AIService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -50,9 +49,15 @@ public class AIController {
         return Result.success(TitleVO.builder().title(aiService.smartTitle(contentDTO)).build());
     }
 
+    @Operation(summary = "智能总结")
+    @PostMapping("/summary")
+    public Result<SummaryVO> smartSummary(@RequestBody ContentDTO contentDTO) {
+        return Result.success(SummaryVO.builder().summary(aiService.smartSummary(contentDTO)).build());
+    }
+
     @Operation(summary = "文字识别")
     @PostMapping("/ocr")
-    public Result<?> ocrPredict() {
-        return Result.success();
+    public Result<TextVO> ocrPredict(MultipartFile file) {
+        return Result.success(TextVO.builder().text(aiService.ocrPredict(file)).build());
     }
 }

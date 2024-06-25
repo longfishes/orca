@@ -8,6 +8,7 @@ import com.longfish.orca.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -60,6 +61,19 @@ public class AIServiceImpl implements AIService {
                 pyProperties.getBaseUrl() + "/title",
                 contentDTO,
                 String.class).getBody();
+    }
+
+    @Override
+    public String smartSummary(ContentDTO contentDTO) {
+        return restTemplate.postForEntity(
+                pyProperties.getBaseUrl() + "/summary",
+                contentDTO,
+                String.class).getBody();
+    }
+
+    @Override
+    public String ocrPredict(MultipartFile file) {
+        return null;
     }
 
 }
