@@ -13,8 +13,8 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     const userStore = useUserStore()
-    if (userStore.userInfo.token) {
-      config.headers.Authorization = userStore.userInfo.token
+    if (userStore.userInfo.jwt) {
+      config.headers.Authorization = userStore.userInfo.jwt
       // 请求头携带toknen,则token失效后不能访问详情页，直接退出登录
     }
     return config

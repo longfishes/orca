@@ -23,6 +23,14 @@ const router = createRouter({
       ]
     },
     {
+      path: '/detail/:id',
+      component: () => import('@/views/documentDetail/index.vue')
+    },
+    {
+      path: '/newdocum',
+      component: () => import('@/views/NewDocum/index.vue')
+    },
+    {
       path: '/login',
       component: () => import('@/views/Login/index.vue')
     },
