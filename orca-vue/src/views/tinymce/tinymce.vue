@@ -115,32 +115,32 @@ export default {
   },
   beforeUnmount() {
     console.log(this.content)
-
-    // 处理标题逻辑
-
-    // 使用DOMParser来解析HTML
-
+    // 创建一个新的 DOMParser 实例
     const parser = new DOMParser()
 
+    // 假设 this.content 是一个包含 HTML 的字符串
     const doc = parser.parseFromString(this.content, 'text/html')
 
-    // 查找第一个<p>标签
+    // 查找第一个标题（h1 到 h6）
+    const firstHeading = doc.body.querySelector('h1, h2, h3, h4, h5, h6')
 
-    const firstParagraph = doc.body.querySelector('p')
-
-    // 获取第一段文本（如果存在）
-
-    if (firstParagraph) {
-      this.firstParagraphText =
-        firstParagraph.textContent || firstParagraph.innerText
-
-      console.log(this.firstParagraphText) // 输出: 这是第一段文本。
+    // 如果没有找到标题，则查找第一个段落
+    if (!firstHeading) {
+      const firstParagraph = doc.body.querySelector('p')
+      if (firstParagraph) {
+        this.firstText = firstParagraph.textContent || firstParagraph.innerText
+        console.log('第一段文本（如果是段落）:', this.firstText)
+      }
+    } else {
+      // 如果找到了标题，则使用标题的内容
+      this.firstText = firstHeading.textContent || firstHeading.innerText
+      console.log('第一个标题的文本:', this.firstText)
     }
     // 上传修改的文档
     const createNew = async () => {
       detailStore.flag = false
       await updateDetailAPI({
-        title: this.firstParagraphText,
+        title: this.firstText,
 
         content: this.content,
         id: detailStore.idRouter

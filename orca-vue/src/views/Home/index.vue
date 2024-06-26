@@ -1,11 +1,12 @@
 <script setup>
-import { ref ,onMounted,onUnmounted} from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useDetailStore } from '@/stores'
-import { getListAPI } from '@/api/detail'
+import { getListAPI, deleteAPI, renameAPI } from '@/api/detail'
 const detailStore = useDetailStore()
 const list = ref([])
 const loading = ref(true)
 import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 const router = useRouter()
 const handleRowClick = (row, column) => {
   // row 是被点击的行的数据
@@ -15,7 +16,10 @@ const handleRowClick = (row, column) => {
   // 假设你的详情页路由是 '/detail/:id'，并且你的行数据中包含 'id' 属性
   router.push(`/detail/${row.id}`)
 }
-const getList = () => {
+const getList = async() => {
+  // const res = await getListAPI('/')
+  // list.value = res.data.data
+  // loading.value = false
   const intervalId = setInterval(async () => {
     if (detailStore.flag) {
       console.log('可以了')
@@ -25,7 +29,7 @@ const getList = () => {
       clearInterval(intervalId)
       loading.value = false
     }
-  }, 1000)
+  }, 2000)
 }
 
 getList()
@@ -33,20 +37,39 @@ getList()
 const contextMenuVisible = ref(false)
 const contextMenuTop = ref(0)
 const contextMenuLeft = ref(0)
-const contextMenuHeight = 250 // 假设菜单高度为200px  
-const contextMenuWeight = 300 // 假设菜单高度为200px  
+const contextMenuHeight = 500 // 假设菜单高度为200px
+const contextMenuWeight = 100 // 假设菜单高度为200px
+const id = ref(0)
+const currentRow = ref(null)
 // 处理表格右击事件
-function handleTableContextmenu(event) {
+const handleTableContextmenu = (row, column, event) => {
   event.preventDefault()
+  console.log()
   contextMenuVisible.value = true
-  contextMenuTop.value = event.clientY-contextMenuHeight
-  contextMenuLeft.value = event.clientX-contextMenuWeight
+  const windowHeight =
+    window.innerHeight || document.documentElement.clientHeight
+  contextMenuTop.value =
+    event.clientY > windowHeight / 2 ? event.clientY - 432 : event.clientY
+  contextMenuLeft.value = event.clientX - contextMenuWeight
+  console.log(row.id)
+  detailStore.getIdRow(row.id)
 }
-
 // 处理菜单项点击事件
-function handleMenuItemClick(option) {
+function deleteMenuItemClick(option) {
   console.log(`选中了菜单项: ${option}`)
+  const deleteWord = async () => {
+    await deleteAPI(detailStore.idRow)
+    getList()
+    if (detailStore.idRow) ElMessage.success('文档已删除，30天内可在回收站找回')
+  }
+
+  deleteWord()
   contextMenuVisible.value = false
+}
+const rename = async () => {
+  renameAPI({
+    id
+  })
 }
 // 监听文档点击事件以隐藏菜单（如果需要的话）
 const hideMenuOnDocClick = (event) => {
@@ -76,7 +99,8 @@ onUnmounted(() => {
         :row-style="{ height: '60px' }"
         @row-click="handleRowClick"
         v-loading="loading"
-        @contextmenu="handleTableContextmenu"
+        @row-contextmenu="handleTableContextmenu"
+        row-key="id"
       >
         <el-table-column prop="title" label="名称"> </el-table-column>
         <!-- <el-table-column prop="belong" label="归属"></el-table-column> -->
@@ -93,9 +117,18 @@ onUnmounted(() => {
         :style="{ top: contextMenuTop + 'px', left: contextMenuLeft + 'px' }"
         class="context-menu"
       >
-        <ul>
-          <li @click="handleMenuItemClick('option1')">选项1</li>
-          <li @click="handleMenuItemClick('option2')">选项2</li>
+        <ul class="flexpf">
+          <li>新窗口打开</li>
+          <li>复制链接</li>
+          <li>置顶</li>
+          <li>智能助手</li>
+          <li @click="rename('option2')">重命名</li>
+          <li>移动到</li>
+          <li>创建副本</li>
+          <li>下载</li>
+          <li>转让所有权</li>
+          <li @click="deleteMenuItemClick('option1')">删除</li>
+
           <!-- 其他菜单项 -->
         </ul>
       </div>
@@ -124,15 +157,17 @@ onUnmounted(() => {
 }
 
 .context-menu {
-  position: absolute;
+  position: fixed;
   z-index: 1000; /* 确保菜单显示在其他内容之上 */
   background-color: #fff;
   border: 1px solid #ccc;
   padding: 10px;
-  height: 200px;
-  width: 100px;
+  height: 432px;
+  width: 140px;
+  box-shadow: 0 0 3px 3px #efefef;
 }
 .context-menu ul {
+  height: 100%;
   list-style: none;
   padding: 0;
   margin: 0;

@@ -118,7 +118,7 @@ export default {
 
     // 查找第一个<p>标签
 
-    const firstParagraph = doc.body.querySelector('p')
+    const firstParagraph = doc.body.querySelector('p,h1,h2,h3,h4,h5,h6')
 
     // 获取第一段文本（如果存在）
 

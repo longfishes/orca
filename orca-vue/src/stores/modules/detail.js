@@ -16,6 +16,11 @@ export const useDetailStore = defineStore(
     const setFlag = (data) => {
       flag.value = data
     }
+    // 右击获取该行的id
+    const idRow = ref(0)
+    const getIdRow = (id)=>{
+      idRow.value=id
+    }
    const getIdRouter = (id) => {
       idRouter.value = id
     }
@@ -31,7 +36,9 @@ export const useDetailStore = defineStore(
       getIdRouter,
       idRouter,
       flag,
-      setFlag
+      setFlag,
+      getIdRow,
+      idRow
     }
   },
   { persist: true }

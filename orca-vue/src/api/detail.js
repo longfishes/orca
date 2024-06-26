@@ -47,3 +47,27 @@ export const CreateNewAPI = (data) => {
     data
   })
 }
+
+// 删除文章
+export const deleteAPI = (id) => {
+  return request({
+    url: `/document/${id}`,
+    method: 'DELETE',
+    id
+  })
+}
+
+// 重命名文章
+export const renameAPI = ({
+  id,
+  title 
+}) => {
+  return request({
+    url: '/document/update',
+    method: 'PUT',
+    data: {
+      id,
+      title      
+    }
+  })
+}
