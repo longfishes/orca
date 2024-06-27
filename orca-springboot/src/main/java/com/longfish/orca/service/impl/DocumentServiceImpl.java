@@ -98,7 +98,12 @@ public class DocumentServiceImpl extends ServiceImpl<DocumentMapper, Document> i
         }
         List<Long> docIds = histories.stream().map(History::getDocId).toList();
         List<DocumentAbstractVO> resultList = new ArrayList<>();
-        docIds.forEach(i -> resultList.add(BeanUtil.copyProperties(getById(i), DocumentAbstractVO.class)));
+        docIds.forEach(i -> {
+            Document doc = getById(i);
+            if (!doc.getIsLocked() && !doc.getIsDeleted()) {
+                resultList.add(BeanUtil.copyProperties(doc, DocumentAbstractVO.class));
+            }
+        });
         return resultList;
     }
 

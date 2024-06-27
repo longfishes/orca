@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.longfish.orca.constant.CommonConstant.APPLICATION_JSON;
 import static com.longfish.orca.constant.DatabaseConstant.AI_SESSION;
@@ -29,6 +31,9 @@ public class AIServiceImpl implements AIService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private OkHttpClient okHttpClient;
 
     private int i = 0;
 
@@ -76,10 +81,7 @@ public class AIServiceImpl implements AIService {
     public String ocrPredict(MultipartFile file) {
         String img = Base64.getEncoder().encodeToString(file.getBytes());
 
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-
-        Response response = client.newCall(
+        Response response = okHttpClient.newCall(
                 new Request.Builder()
                         .url(pyProperties.getOcrUrl() + pyProperties.getOcrPath())
                         .method("POST", RequestBody.create(MediaType.parse(APPLICATION_JSON),
@@ -87,7 +89,17 @@ public class AIServiceImpl implements AIService {
                         .header(pyProperties.getHeaderName(), pyProperties.getAccessKey())
                         .build()).execute();
 
-        return null;
+        return text(Objects.requireNonNull(response.body()).string());
+    }
+
+    public static String text(String jsonString) {
+        StringBuilder texts = new StringBuilder();
+        Pattern pattern = Pattern.compile("\"text\"\\s*:\\s*\"(.*?)\"");
+        Matcher matcher = pattern.matcher(jsonString);
+        while (matcher.find()) {
+            texts.append(matcher.group(1));
+        }
+        return texts.toString();
     }
 
 }
