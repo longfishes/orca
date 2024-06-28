@@ -395,7 +395,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (!StringUtils.isBlank(userInfoDTO.getInfo())) {
             update.setInfo(userInfoDTO.getInfo());
         }
-        if (userInfoDTO.getGender() != 0) {
+        if (userInfoDTO.getGender() != null && userInfoDTO.getGender() > 0 && userInfoDTO.getGender() < 4) {
             update.setGender(userInfoDTO.getGender());
         }
         if (!StringUtils.isBlank(userInfoDTO.getBirthday())) {
